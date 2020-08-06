@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Driver {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		boolean done = false;
 		int userType;
 		Scanner scan = new Scanner(System.in);
@@ -25,6 +25,7 @@ public class Driver {
 				//verify password
 				/*if(u.getPassword.equals(input))
 				 * {
+				 * 		//retrieve user info from database and save user type
 				 * 		//display user's basic info and prompt with available actions
 				 * }
 				 * else
@@ -39,11 +40,13 @@ public class Driver {
 				c.setRealName(scan.nextLine());
 				System.out.println("Enter your username:");
 				//todo: add check if username is taken and ask for a different one if it is
-				c.setUsername(scan.nextLine());
+				c.setUserName(scan.nextLine());
 				System.out.println("Enter your password:");
 				c.setPassword(scan.nextLine());
-				//todo: send account open request
+				//todo: send account open request (add new user to Users table)
 				System.out.println("Account requested. Please wait for access");
+				Thread.sleep(2000);
+				done = true;
 				
 			}
 			else
