@@ -2,7 +2,7 @@ package com.models;
 
 import java.util.List;
 
-public class Employee extends Customer{
+public class Employee extends User{
 
 	public List<Customer> Customers;
 	public Customer c;
@@ -29,12 +29,23 @@ public class Employee extends Customer{
 		}
 		if(c != null)
 		{
-			String output = "\nUsername: " + this.userName + "\n" + 
-				this.realName +  "\nPassword: " + this.password + "\nBalance: " + this.balance;
+			String output = "\nUsername: " + c.userName + "\n" + 
+				c.realName +  "\nPassword: " + c.password + "\nBalance: " + c.balance;
 			return output;
 		}
 		else
 			return "User not found.";
+	}
+
+	@Override
+	public String printAccountInfo() {
+		//print the employee's account info; include 
+		String output = "Welcome, " + this.realName + "\nYour customers:";
+		for(Customer c: Customers)
+		{
+			output = output + "\n" + c.userName;
+		}
+		return output;
 	}
 
 }

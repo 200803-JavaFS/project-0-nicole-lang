@@ -1,21 +1,22 @@
 package com.models;
 
-public class Customer implements User {
+public class Customer extends User {
 	
 	//A Customer IS A User
 	
 	//A customer's available actions are deposit, withdrawal, and transfer
 
-	String realName;
-	String userName;
-	String password;
-	
 	//Only customer accounts have a balance.
+	boolean activeUser;
 	double balance;
 	
 	//Customers have View and Update permissions but only for their own accounts.
 	public Customer() {
-		super();
+		//initialize variables
+		this.realName = "";
+		this.userName = "";
+		this.password = "";
+		this.balance = 0.00;
 	}
 
 	public String printAccountInfo() {
@@ -55,30 +56,6 @@ public class Customer implements User {
 	{
 		//change balance without returning a result, to hide target user's balance
 		balance += amt;
-	}
-
-	public String getRealName() {
-		return realName;
-	}
-
-	public void setRealName(String realName) {
-		this.realName = realName;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 }
