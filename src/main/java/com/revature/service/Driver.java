@@ -2,24 +2,28 @@ package com.revature.service;
 
 import java.util.*;
 
-import com.revature.models.Customer;
+import com.revature.models.User;
 
 public class Driver {
 	//static variables accessible by all driver methods
-	static int userType;
 	static String currentUser;
 	static String input;
 
-	static Customer c = new Customer();
-	
+	static User u;
+	static String userType;
 	public static void main(String[] args) throws InterruptedException {
-
+		String userN;
+		String fullN;
+		String passW;
+		u = new User();
+		
+		userType = "";
 		boolean done = false;
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Welcome to Delta Savings!");
 
 		do {
-			if(currentUser.isEmpty())
+			if(userType == "")
 			{
 				System.out.println("Enter '0' to log in or '1' to create an account. Enter 'exit' to quit.");
 				input = scan.nextLine();
@@ -27,12 +31,26 @@ public class Driver {
 				{
 				case "0":
 				{
-					currentUser = login(scan);
+					//login with existing username and password
+					System.out.println("Enter your username:");
+					userN = scan.nextLine();
+					//todo: find database user that matches input username and get their usertype if found
+					System.out.println("Enter your password:");
+					passW = scan.nextLine();
+					//todo: check if password matches the username's associated password
+					login(userN);
 					break;
 				}
 				case "1":{
-					createAccount(scan);
-					
+					//create new user account
+					System.out.println("Enter your full name:");
+					fullN = scan.nextLine();
+					System.out.println("Enter a username:");
+					userN = scan.nextLine();
+					//todo: check availability of user name
+					System.out.println("Username " + u.getUserName() + " is available. Enter a password:");
+					passW = scan.nextLine();
+					createAccount(fullN, userN, passW);
 					break;
 				}
 				case "exit":
@@ -48,7 +66,19 @@ public class Driver {
 			else
 			{
 				//If there is a user logged in, display their basic info and prompt with available actions
-				c.printAccountInfo();
+				
+				switch(userType)
+				{
+				case "customer":
+					
+					break;
+				case "employee":
+					break;
+				case "admin":
+					break;
+				}
+				
+				u.printAccountInfo();
 			}
 			
 		}while (!done);
@@ -56,46 +86,39 @@ public class Driver {
 		scan.close();
 	}
 
-	private static void createAccount(Scanner s) {
-		//do customer account open request
-		System.out.println("Enter your full name:");
-		c.setRealName(s.nextLine());
-		System.out.println("Enter a username:");
-		//todo: add check if username is taken and ask for a different one if it is
-		c.setUserName(s.nextLine());
-		System.out.println("Username " + c.getUserName() + " is available. Enter a password:");
-		c.setPassword(s.nextLine());
+	private static void createAccount(String real, String user, String pwd) {
+		//create customer account open request
+		u.setRealName(real);
+		u.setUserName(user);
+		u.setPassword(pwd);
+		u.setAccountType("customer");
 		//todo: send account open request (add new user to Users table)
 		System.out.println("Account requested. Please wait for access");
 	}
 
-	private static String login(Scanner s) {
-		String userName;
+	private static String login(String user) {
 		//do login
-		System.out.println("Enter your username:");
-		userName = s.nextLine();
-		//todo: find database user that matches input username and get their usertype if found
-		System.out.println("Enter your password:");
-		input = s.nextLine();
-		//verify password
-		//				if(u.getPassword.equals(input))
-		//				  {
-		//				  		//retrieve user info from database and save user type
-		//				  }
-		//				  else
-		//				  		System.out.println("Incorrect password");
-		//
 		
-		return userName;
+		//verify password
+		//		if(u.getPassword.equals(input))
+		//		{
+		//			//retrieve user info from database and save user type
+		//		}
+		//		else
+		//			System.out.println("Incorrect password");
+		//
+		userType = "customer";
+		return("In login method");
+		
 		
 	}
 	
 	public static String withdraw(double amt)
 	{
-		if(amt > 0 && amt <= c.getBalance())
+		if(amt > 0 && amt <= u.getBalance())
 		{
-			c.setBalance(c.getBalance() - amt);
-			return("Withdrawal successful. New balance: " + c.getBalance());
+			u.setBalance(u.getBalance() - amt);
+			return("Withdrawal successful. New balance: " + u.getBalance());
 		}
 		else if(amt < 0) 
 			return "You cannot withdraw a negative amount of money; please use deposit to add funds";
@@ -106,22 +129,23 @@ public class Driver {
 	
 	public static String deposit(double amt)
 	{
+		//deposit funds if amount provided is positive
 		if(amt > 0)
 		{
-			c.setBalance(c.getBalance() + amt);
-			return("Deposit successful. New balance: " + c.getBalance());
+			u.setBalance(u.getBalance() + amt);
+			return("Deposit successful. New balance: " + u.getBalance());
 		}
 		else
 			return("You cannot deposit a negative amount of money; please use withdraw to remove funds");
 	}
 	
 	
-	public static String transfer(double amt, Customer targetUser)
+	public static String transfer(double amt, User targetUser)
 	{
-		if(amt > 0 && amt <= c.getBalance())
+		if(amt > 0 && amt <= u.getBalance())
 		{
-			c.setBalance(c.getBalance() - amt);
-			targetUser.setBalance(c.getBalance() + amt);
+			u.setBalance(u.getBalance() - amt);
+			targetUser.setBalance(u.getBalance() + amt);
 			return("Transfer successful");
 		}
 		else if(amt < 0) 

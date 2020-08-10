@@ -1,0 +1,19 @@
+This is a personal reference for what each user type should be able to do.
+
+A Customer IS A User
+Customers have View and Update permissions but only for their own accounts.
+	
+An Employee IS A User; 1 Employee HAS Many Customers
+	
+An employee can view the information of any customer but cannot edit it
+They also can approve/deny account creation requests.
+	
+Permissions for Employee users: View, Update(only to change default user into customer), 
+Delete(only if deleting an unregistered User)
+
+An Admin IS AN Employee
+	
+An admin can carry out all the same methods as a Customer or Employee, on all accounts
+They also have the ability to cancel (delete) registered accounts, except for their own.
+	
+Admin users have View, Update, and Delete permissions for all accounts.

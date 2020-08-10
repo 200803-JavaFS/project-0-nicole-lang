@@ -1,6 +1,6 @@
 package com.revature.service;
 
-import com.revature.models.Customer;
+import com.revature.models.User;
 import static org.junit.Assert.*;
 
 import org.junit.After;
@@ -10,13 +10,12 @@ import org.junit.Test;
 
 public class DriverTests {
 
-	public static Customer c;
-	
+	public static User c;
 	
 	@BeforeClass
 	public static void setUp()
 	{
-		c = new Customer();
+		c = new User();
 	}
 	@Before
 	public void setValues()
@@ -28,25 +27,30 @@ public class DriverTests {
 		c.setBalance(100.00);
 	}
 	@Test
-	public void printInfo()
-	{
-		System.out.println(c.printAccountInfo());
-	}
-	@Test
 	public void testDeposit() {
 		System.out.println("Testing valid deposit");
 		Driver.deposit(50.00);
+		assertTrue(c.getBalance() == 150.00);
+		
 		System.out.println("Testing invalid (negative) deposit");
 		Driver.deposit(-50.00);
+		assertTrue(c.getBalance() == 150.00);
+		//reset balance
+		c.setBalance(100.00);
 	}
 	@Test
 	public void testWithdrawal() {
 		System.out.println("Testing valid withdrawal");
 		Driver.withdraw(50.00);
+		assertTrue(c.getBalance() == 50.00);
+		
 		System.out.println("Testing invalid (negative) withdrawal");
 		Driver.withdraw(-50.00);
+		assertTrue(c.getBalance() == 50.00);
+		
 		System.out.println("Testing invalid (greater than balance) withdrawal");
-		Driver.withdraw(150.00);
+		Driver.withdraw(75.00);
+		assertTrue(c.getBalance() == 50.00);
 	}
 	
 
