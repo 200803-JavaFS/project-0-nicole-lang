@@ -1,4 +1,4 @@
-package com.models;
+package com.revature.models;
 
 public class Admin extends Employee{
 

@@ -1,11 +1,11 @@
-package com.models;
+package com.revature.models;
 
 import java.util.List;
 
-public class Employee extends User{
+public class Employee extends Customer{
 
 	public List<Customer> Customers;
-	public Customer c;
+	public static Customer c;
 	//An Employee IS A User; 1 Employee HAS Many Customers
 	
 	//An employee can view the information of any customer but cannot edit it

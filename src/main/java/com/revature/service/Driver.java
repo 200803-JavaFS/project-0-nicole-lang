@@ -1,16 +1,19 @@
-package com.service;
+package com.revature.service;
 
 import java.util.*;
 
-import com.models.*;
+import com.revature.models.Customer;
 
 public class Driver {
 	//static variables accessible by all driver methods
 	static int userType;
 	static String currentUser;
 	static String input;
+
+	static Customer c = new Customer();
 	
 	public static void main(String[] args) throws InterruptedException {
+
 		boolean done = false;
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Welcome to Delta Savings!");
@@ -45,7 +48,7 @@ public class Driver {
 			else
 			{
 				//If there is a user logged in, display their basic info and prompt with available actions
-				System.out.println();
+				c.printAccountInfo();
 			}
 			
 		}while (!done);
@@ -55,7 +58,6 @@ public class Driver {
 
 	private static void createAccount(Scanner s) {
 		//do customer account open request
-		Customer c = new Customer();
 		System.out.println("Enter your full name:");
 		c.setRealName(s.nextLine());
 		System.out.println("Enter a username:");
@@ -87,23 +89,45 @@ public class Driver {
 		return userName;
 		
 	}
-
-
-	//public String withdraw(double amt)
-	//{
-	//	
-	//}
-	//
-	//
-	//public String deposit(double amt)
-	//{
-	//	
-	//}
-	//
-	//
-	//public String transfer(double amt)
-	//{
-	//	
-	//}
+	
+	public static String withdraw(double amt)
+	{
+		if(amt > 0 && amt <= c.getBalance())
+		{
+			c.setBalance(c.getBalance() - amt);
+			return("Withdrawal successful. New balance: " + c.getBalance());
+		}
+		else if(amt < 0) 
+			return "You cannot withdraw a negative amount of money; please use deposit to add funds";
+		else
+			return "Insufficient funds";
+	}
+	
+	
+	public static String deposit(double amt)
+	{
+		if(amt > 0)
+		{
+			c.setBalance(c.getBalance() + amt);
+			return("Deposit successful. New balance: " + c.getBalance());
+		}
+		else
+			return("You cannot deposit a negative amount of money; please use withdraw to remove funds");
+	}
+	
+	
+	public static String transfer(double amt, Customer targetUser)
+	{
+		if(amt > 0 && amt <= c.getBalance())
+		{
+			c.setBalance(c.getBalance() - amt);
+			targetUser.setBalance(c.getBalance() + amt);
+			return("Transfer successful");
+		}
+		else if(amt < 0) 
+			return "You cannot transfer a negative amount of money; please use deposit to add funds";
+		else
+			return "Insufficient funds";
+	}
 
 }
