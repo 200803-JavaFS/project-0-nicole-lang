@@ -1,7 +1,7 @@
 package com.revature.service;
 
 import java.util.*;
-
+import com.revature.dao.DatabaseManager;
 import com.revature.models.User;
 
 public class Driver {
@@ -35,26 +35,42 @@ public class Driver {
 					//login with existing username and password
 					System.out.println("Enter your username:");
 					userN = scan.nextLine();
-					//todo: find database user that matches input username and get their usertype if found
-					//do within DAO
 					System.out.println("Enter your password:");
 					passW = scan.nextLine();
-					//todo: check if password matches the username's associated password
-					//do within DAO
-					login(userN);
-					loginDone = true;
+
+					userType = DatabaseManager.getUserType(userN);
+					
+					u = DatabaseManager.login(userN, passW);
+					if(u.getActive())
+						loginDone = true;
+					else if(u.getRealName().equals(""))
+						System.out.println("User "+ userN + " does not exist.");
+					else
+						System.out.println("Incorrect password");
 					break;
 				}
 				case "1":{
 					//create new user account
 					System.out.println("Enter your full name:");
 					fullN = scan.nextLine();
-					System.out.println("Enter a username:");
-					userN = scan.nextLine();
-					//todo in dao: check availability of user name
-					System.out.println("Username " + u.getUserName() + " is available. Enter a password:");
-					passW = scan.nextLine();
-					createAccount(fullN, userN, passW);
+					//temporarily using execution control to control username selection loop
+					while(!done)
+					{
+						System.out.println("Enter a username:");
+						userN = scan.nextLine();
+						if(DatabaseManager.getUser(userN).getRealName().equals(""))
+						{
+							System.out.println("Username " + u.getUserName() + " is available. Enter a password:");
+							passW = scan.nextLine();
+							createAccount(fullN, userN, passW);
+							done = true;
+						}
+						else
+							System.out.println("That username is taken, try another");
+					}
+					System.out.println("Account request submitted. Please wait for access.");
+					//reset boolean done so execution will continue
+					done = false;
 					break;
 				}
 				case "exit":
@@ -63,7 +79,7 @@ public class Driver {
 					break;
 				}
 				default:
-					System.out.println("Invalid input");
+					System.out.println("Invalid selection");
 					break;
 				}
 			}
@@ -93,25 +109,10 @@ public class Driver {
 		u.setUserName(user);
 		u.setPassword(pwd);
 		u.setAccountType("Customer");
-		//todo: send account open request using dao (add new user to Users table)
+		DatabaseManager.createUser(u);
 		System.out.println("Account requested. Please wait for access");
 	}
-
-	private static String login(String user) {
-		//do login
-		
-		//verify password
-		//		if(u.getPassword.equals(input))
-		//		{
-		//			//retrieve user info from database and save user type
-		//		}
-		//		else
-		//			System.out.println("Incorrect password");
-		//
-		return("In login method");
-		
-		
-	}
+	
 	//The following methods should also call dao methods to
 	//update the database record(s) affected and log the transaction.
 	public static String withdraw(double amt)
@@ -119,6 +120,7 @@ public class Driver {
 		if(amt > 0 && amt <= u.getBalance())
 		{
 			u.setBalance(u.getBalance() - amt);
+			DatabaseManager.updateBalance(u.getUserName(), u.getBalance());
 			return("Withdrawal successful. New balance: " + u.getBalance());
 		}
 		else if(amt < 0) 
@@ -134,6 +136,7 @@ public class Driver {
 		if(amt > 0)
 		{
 			u.setBalance(u.getBalance() + amt);
+			DatabaseManager.updateBalance(u.getUserName(), u.getBalance());
 			return("Deposit successful. New balance: " + u.getBalance());
 		}
 		else
@@ -146,7 +149,9 @@ public class Driver {
 		if(amt > 0 && amt <= u.getBalance())
 		{
 			u.setBalance(u.getBalance() - amt);
-			targetUser.setBalance(u.getBalance() + amt);
+			targetUser.setBalance(targetUser.getBalance() + amt);
+			DatabaseManager.updateBalance(u.getUserName(), u.getBalance());
+			DatabaseManager.updateBalance(targetUser.getUserName(), targetUser.getBalance());
 			return("Transfer successful");
 		}
 		else if(amt < 0) 

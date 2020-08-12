@@ -1,5 +1,6 @@
 package com.revature.models;
 
+import com.revature.dao.DatabaseManager;
 public class User {
 
 	//Declare class-level variables
@@ -30,12 +31,12 @@ public class User {
 				output += "Balance: " + balance;
 				break;
 			case "employee":
-				output += "--Pending Account Requests--\n" + Employee.listRequests()
-					+ "\n\n--Your Active Customers--" + Employee.listCustomers(userName);
+				output += "--Pending Account Requests--\n" + DatabaseManager.listRequests()
+					+ "\n\n--Your Active Customers--" + DatabaseManager.listEmpCustomers(userName);
 				break;
 			case "admin":
-				output += "--Pending Account Requests--\n" + Employee.listRequests()
-					+ "--User List--\n" + Admin.listUsers();
+				output += "--Pending Account Requests--\n" + DatabaseManager.listRequests()
+					+ "--User List--\n" + DatabaseManager.listUsers();
 				break;
 		}	
 		return output;
@@ -60,7 +61,8 @@ public class User {
 		}
 		return actions;
 	}
-
+	
+	//declare getters and setters
 	public String getRealName() {
 		return realName;
 	}
@@ -101,12 +103,10 @@ public class User {
 	}
 	
 	public String getAccountType() {
-		return accountType;
-		
+		return accountType;	
 	}
 
 	public void setAccountType(String type) {
 		accountType = type;
 	}
-
 }

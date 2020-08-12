@@ -1,12 +1,11 @@
 package com.revature.dao;
 import com.revature.models.User;
-public class DatabaseManager {
 
-	public static String currentUser;
-	public DatabaseManager() {
-		// TODO Auto-generated constructor stub
-	}
-	public static void updateBalance(double newBalance)
+public interface DatabaseManager {
+	//DAO interface to provide methods which run queries on the DeltaSavings database and return the results
+	//In Java 8, interfaces can have static methods with bodies
+	
+	public static void updateBalance(String currentUser, double newBalance)
 	{
 		//Update Users Set Balance = @newBalance Where UserName = @currentUser 
 	}
@@ -20,6 +19,45 @@ public class DatabaseManager {
 		//Select * From Users Where UserName = @userName And Password = @password
 		//populate the current user's fields if a matching record is found
 		return u;
+	}
+	public static User getUser(String userName)
+	{
+		//similar to login but doesn't check password; used by employees and admins to view other users' inf
+		User u = new User();
+		//Select * From Users Where UserName = @userName
+		return u;
+	}
+	public static String getUserType(String userName)
+	{
+		String type = "Customer"; //default type
+		//Return only the user type of a selected user, to check permissions/what information to display
+		//Select UserType from Users Where UserName = @userName
+		return type;
+	}
+	public static String listEmpCustomers(String empUserName)
+	{
+		String empCustomers = "";
+		//Run SQL stored procedure for retrieving a list of customers whose linked employee == empUserName
+		//return the retrieved list in String format
+		return empCustomers.toString();
+	}
+	public static String listRequests()
+	{
+		String requests = "";
+		//Run SQL stored procedure for retrieving a list of inactive users
+		//return the retrieved list in String format
+		return requests.toString();
+	}
+	public static String listUsers()
+	{
+		String allUsers = "";
+		//retrieve list of all users in the database
+		//Select * From Users Order by UserName
+		return allUsers;
+	}
+	public static void deleteUser(String userName)
+	{
+		//run query to delete the database record of a user from the request list
 	}
 
 }
