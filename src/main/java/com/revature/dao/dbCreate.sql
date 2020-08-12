@@ -1,45 +1,40 @@
 CREATE DATABASE DeltaSavings;
+
 CREATE TABLE Users (
-    UserName VARCHAR(45) NOT NULL,
-    IsActive BOOLEAN DEFAULT FALSE,
-    UserType VARCHAR(8) DEFAULT 'Customer',
-    UserRealName VARCHAR(45),
-    UserPassword VARCHAR(45),
-    PRIMARY KEY (UserName)
+	User_Name VARCHAR(45) NOT NULL PRIMARY KEY,
+	--If User_Type is User then the user is not active
+	User_Type VARCHAR(8) DEFAULT 'User',
+	User_First_Name VARCHAR(30),
+	User_Last_Name VARCHAR(30),
+    User_Password VARCHAR(45),
 );
-CREATE TABLE Customers (
-    UserName VARCHAR(45) NOT NULL,
-    LinkedEmployee VARCHAR(45),
-    AccountBalance DOUBLE,
-    FOREIGN KEY (UserName)
-        REFERENCES Users (UserName)
+CREATE TABLE Accounts (
+    User_Name VARCHAR(45) NOT NULL REFERENCES Users (User_Name),
+	Linked_Employee VARCHAR(45) References Employees (User_Name),
+    Account_Balance DOUBLE PRECISION,
 );
+
+
 -- Create Admin and Employees
-INSERT INTO Users
-VALUES ("nlang", "Admin", "Nicole Lang", 082798);
-INSERT INTO Users
-VALUES ("jdoe", "Employee", "John Doe", 12345);
-INSERT INTO Users
-VALUES ("hkendrick", "Employee", "Haley Kendrick", 09876);
+INSERT INTO users (user_name, user_type, user_first_name, user_last_name, user_password)
+VALUES ('nlang', 'Admin', 'Nicole', 'Lang', 082798),
+('jdoe', 'Employee', 'John', 'Doe', 12345),
+('hkendrick', 'Employee', 'Haley Kendrick', 09876);
+('ffun1', 'Customer', 'Andrew', 'Flynn', 12345)
 
--- Procedure to retrieve a list of pending customer applications
-Delimiter $$
-CREATE PROCEDURE ListInactiveUsers() 
-BEGIN
-SELECT * FROM Users 
-WHERE IsActive = FALSE;
-END$$
--- Procedure for retrieving a specific employee's customer list to determine whose info they can view
-CREATE PROCEDURE ListEmployeeCustomers(EmpName VARCHAR(45))
-BEGIN
+-- Create corresponding Accounts entry for Andrew Flynn; required to create link
+Insert into accounts ('ffun1', 'nlang', 0.00);
+
+--Example queries
+-- Statement for retrieving a list of pending customer applications
+SELECT * FROM Accounts 
+WHERE Linked_Employee = null;
+
+SELECT 
+
+-- Statement for retrieving a specific employee's customer list to determine whose info they can view
 SELECT * FROM Customers 
-WHERE LinkedEmployee = @EmpName;
-END$$
+WHERE Linked_Employee = nlang;
 
--- Procedure to list all active users; for use by Admins
-CREATE PROCEDURE ListCurrentUsers()
-BEGIN
-SELECT * FROM Users LEFT JOIN Customers 
-ON Users.UserName = Customers.UserName 
-WHERE UserType != "User";
-END$$
+-- List all active users; for use by Admins
+SELECT * FROM Users Where User_Type != 'User';
