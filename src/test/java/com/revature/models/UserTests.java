@@ -33,8 +33,13 @@ public class UserTests {
 	@Test
 	public void testPrintAccountInfo() {
 		System.out.println("Testing printing account info");
-		assertFalse(c.printAccountInfo().isEmpty());
+		assertTrue(c.printAccountInfo().contains("Nicole Lang"));
 		System.out.println("printAccountInfo successful");
 	}
-
+	@Test
+	public void testGetPrompt() {
+		System.out.println("Testing retrieving action prompt");
+		assertTrue(c.getPrompt().equals(c.defaultActions));
+		System.out.println("getPrompt successful");
+	}
 }

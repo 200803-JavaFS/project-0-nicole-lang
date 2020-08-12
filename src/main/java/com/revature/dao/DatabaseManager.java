@@ -39,14 +39,14 @@ public interface DatabaseManager {
 		String empCustomers = "";
 		//Run SQL stored procedure for retrieving a list of customers whose linked employee == empUserName
 		//return the retrieved list in String format
-		return empCustomers.toString();
+		return empCustomers;
 	}
 	public static String listRequests()
 	{
 		String requests = "";
 		//Run SQL stored procedure for retrieving a list of inactive users
 		//return the retrieved list in String format
-		return requests.toString();
+		return requests;
 	}
 	public static String listUsers()
 	{
