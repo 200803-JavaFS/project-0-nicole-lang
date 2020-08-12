@@ -1,12 +1,11 @@
 package com.revature.models;
 
-//import the more specific user models to gain access to their methods
-import com.revature.models.Employee;
-import com.revature.models.Admin;
-
 public class User {
 
 	//Declare class-level variables
+	final String defaultActions = "Select operation:\n(1) deposit\n(2) withdraw\n(3) transfer"
+			+ "\n(x) log out";
+	
 	String realName;
 	String userName;
 	String password;
@@ -16,32 +15,51 @@ public class User {
 	
 	public User() {
 		//initialize variables
-		this.realName = "";
-		this.userName = "";
-		this.password = "";
-		this.balance = 0.00;
-		this.activeUser = false;
+		realName = "";
+		userName = "";
+		password = "";
+		balance = 0.00;
+		activeUser = false;
 	}
 
 	public String printAccountInfo() {
-		String output="";
+		String output = "Welcome, " + realName;
 		switch(accountType)
-		{//print the appropriate account information for the type of user
+		{//print the appropriate account information / available lists for the type of user
 			case "customer":
-				output = this.realName + "\n Balance: " + this.balance;
+				output += "Balance: " + balance;
 				break;
 			case "employee":
-				output = "Welcome, "+ userName;
+				output += "--Pending Account Requests--\n" + Employee.listRequests()
+					+ "\n\n--Your Active Customers--" + Employee.listCustomers(userName);
 				break;
 			case "admin":
-				output = "\nUsername: " + userName + "\n" + 
-						realName +  "\nPassword: " + password + "\nBalance: " + balance;
+				output += "--Pending Account Requests--\n" + Employee.listRequests()
+					+ "--User List--\n" + Admin.listUsers();
 				break;
-		}
-		
+		}	
 		return output;
 	}
-
+	public String getPrompt()
+	{
+		String actions;
+		switch(accountType)
+		{
+		case "Customer":
+			actions = defaultActions;
+			break;
+		case "Employee":
+			actions = Employee.actions;
+			break;
+		case "Admin":
+			actions = Admin.actions;
+			break;
+		default:
+			actions = "Invalid user type!";
+			break;
+		}
+		return actions;
+	}
 
 	public String getRealName() {
 		return realName;

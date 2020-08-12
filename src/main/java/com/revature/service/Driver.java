@@ -11,10 +11,11 @@ public class Driver {
 
 	static User u;
 	static String userType;
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args){
 		String userN;
 		String fullN;
 		String passW;
+		boolean loginDone = false;
 		u = new User();
 		
 		userType = "";
@@ -23,7 +24,7 @@ public class Driver {
 		System.out.println("Welcome to Delta Savings!");
 
 		do {
-			if(userType == "")
+			if(!loginDone)
 			{
 				System.out.println("Enter '0' to log in or '1' to create an account. Enter 'exit' to quit.");
 				input = scan.nextLine();
@@ -35,10 +36,13 @@ public class Driver {
 					System.out.println("Enter your username:");
 					userN = scan.nextLine();
 					//todo: find database user that matches input username and get their usertype if found
+					//do within DAO
 					System.out.println("Enter your password:");
 					passW = scan.nextLine();
 					//todo: check if password matches the username's associated password
+					//do within DAO
 					login(userN);
+					loginDone = true;
 					break;
 				}
 				case "1":{
@@ -47,7 +51,7 @@ public class Driver {
 					fullN = scan.nextLine();
 					System.out.println("Enter a username:");
 					userN = scan.nextLine();
-					//todo: check availability of user name
+					//todo in dao: check availability of user name
 					System.out.println("Username " + u.getUserName() + " is available. Enter a password:");
 					passW = scan.nextLine();
 					createAccount(fullN, userN, passW);
@@ -65,20 +69,17 @@ public class Driver {
 			}
 			else
 			{
-				//If there is a user logged in, display their basic info and prompt with available actions
-				
-				switch(userType)
-				{
-				case "customer":
-					
-					break;
-				case "employee":
-					break;
-				case "admin":
-					break;
-				}
-				
+				//If there is a user logged in, display their basic info
 				u.printAccountInfo();
+				input = scan.nextLine();
+				
+			}
+			//second check for if user is logged in, outside of initial info display
+			//prevents repeat display of lists in every loop iteration
+			if(loginDone)
+			{
+				//prompt with available actions
+				System.out.println(u.getPrompt());
 			}
 			
 		}while (!done);
@@ -91,8 +92,8 @@ public class Driver {
 		u.setRealName(real);
 		u.setUserName(user);
 		u.setPassword(pwd);
-		u.setAccountType("customer");
-		//todo: send account open request (add new user to Users table)
+		u.setAccountType("Customer");
+		//todo: send account open request using dao (add new user to Users table)
 		System.out.println("Account requested. Please wait for access");
 	}
 
@@ -107,12 +108,12 @@ public class Driver {
 		//		else
 		//			System.out.println("Incorrect password");
 		//
-		userType = "customer";
 		return("In login method");
 		
 		
 	}
-	
+	//The following methods should also call dao methods to
+	//update the database record(s) affected and log the transaction.
 	public static String withdraw(double amt)
 	{
 		if(amt > 0 && amt <= u.getBalance())
