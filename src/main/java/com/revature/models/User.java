@@ -4,15 +4,16 @@ import com.revature.dao.DatabaseManager;
 public class User {
 
 	//Declare class-level variables
+	//
 	final String defaultActions = "Select operation:\n(1) deposit\n(2) withdraw\n(3) transfer"
 			+ "\n(x) log out";
 	
-	String realName;
-	String userName;
-	String password;
-	String accountType;
-	boolean activeUser;
-	double balance;
+	private String realName;
+	private String userName;
+	private String password;
+	private String accountType;
+	private boolean activeUser;
+	private double balance;
 	
 	public User() {
 		//initialize variables
@@ -22,7 +23,7 @@ public class User {
 		balance = 0.00;
 		activeUser = false;
 	}
-
+	//The following two methods and the default action string should be in the driver
 	public String printAccountInfo() {
 		String output = "Welcome, " + realName;
 		switch(accountType)
@@ -50,10 +51,12 @@ public class User {
 			actions = defaultActions;
 			break;
 		case "Employee":
-			actions = Employee.actions;
+			actions = "Select operation:\n(1) approve an account request"
+					+ "\n(2) delete an account request" + "\n(x) log out";
 			break;
 		case "Admin":
-			actions = Admin.actions;
+			actions = "Select operation:\n(1) approve an account request"
+					+ "\n(2) deny an account request" + "\n(3) delete an account"  +"\n(x) log out";
 			break;
 		default:
 			actions = "Invalid user type!";

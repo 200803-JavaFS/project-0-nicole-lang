@@ -3,7 +3,8 @@ import com.revature.models.User;
 
 public interface DatabaseManager {
 	//DAO interface to provide methods which run queries on the DeltaSavings database and return the results
-	//In Java 8, interfaces can have static methods with bodies
+
+	//There should be a separate User manager and Account manager interface, for each table
 	
 	public static void updateBalance(String currentUser, double newBalance)
 	{
