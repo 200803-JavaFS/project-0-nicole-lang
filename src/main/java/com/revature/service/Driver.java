@@ -2,22 +2,25 @@ package com.revature.service;
 
 import java.util.*;
 import com.revature.dao.DatabaseManager;
+import com.revature.models.Account;
 import com.revature.models.User;
 
 public class Driver {
 	//static variables accessible by all driver methods
-	static String currentUser;
 	static String input;
 
 	static User u;
+	static Account a;
 	static String userType;
 	public static void main(String[] args){
+		
+		//initialize variables
 		String userN;
 		String fullN;
 		String passW;
 		boolean loginDone = false;
 		u = new User();
-		
+		a = new Account();
 		userType = "";
 		boolean done = false;
 		Scanner scan = new Scanner(System.in);
@@ -41,14 +44,31 @@ public class Driver {
 					userType = DatabaseManager.getUserType(userN);
 					
 					u = DatabaseManager.login(userN, passW);
-					if(u.getActive())
+					if(u.getUserName().equals(userN))
+					{
+						//user exists
+					}
+					if(userType.equals("Customer"))
+					{
+						switch(a.getStatus())
+						{
+						case "Open":
+
+							loginDone = true;
+							break;
+						case "Pending":
+							System.out.println("This account hasn't been activated yet, try again later");
+							break;
+						case "Closed":
+							System.out.println("This account has been closed. Contact admin for assistance.");
+							break;
+						}
+					}else if (u.getUserType().equals("Employee") || u.getUserType().equals("Admin"))
 						loginDone = true;
-					else if(u.getRealName().equals(""))
-						System.out.println("User "+ userN + " does not exist.");
 					else
-						System.out.println("Incorrect password");
-					break;
-				}
+						System.out.println();
+					}
+					
 				case "1":{
 					//create new user account
 					System.out.println("Enter your full name:");
@@ -58,7 +78,7 @@ public class Driver {
 					{
 						System.out.println("Enter a username:");
 						userN = scan.nextLine();
-						if(DatabaseManager.getUser(userN).getRealName().equals(""))
+						if(!UserManager.userExists(userN))
 						{
 							System.out.println("Username " + u.getUserName() + " is available. Enter a password:");
 							passW = scan.nextLine();
@@ -86,7 +106,7 @@ public class Driver {
 			else
 			{
 				//If there is a user logged in, display their basic info
-				u.printAccountInfo();
+				System.out.println(UserManager.getUserInfo(u));
 				input = scan.nextLine();
 				
 			}
@@ -95,7 +115,7 @@ public class Driver {
 			if(loginDone)
 			{
 				//prompt with available actions
-				System.out.println(u.getPrompt());
+				System.out.println(UserManager.getPrompt(u));
 			}
 			
 		}while (!done);
@@ -105,59 +125,15 @@ public class Driver {
 
 	private static void createAccount(String real, String user, String pwd) {
 		//create customer account open request
-		u.setRealName(real);
+		u.setFirstName(real.substring(0, real.indexOf(" ")));
+		u.setLastName(real.substring(real.indexOf(" ")));
 		u.setUserName(user);
 		u.setPassword(pwd);
-		u.setAccountType("Customer");
 		DatabaseManager.createUser(u);
 		System.out.println("Account requested. Please wait for access");
 	}
 	
-	//The following methods should also call dao methods to
-	//update the database record(s) affected and log the transaction.
-	public static String withdraw(double amt)
-	{
-		if(amt > 0 && amt <= u.getBalance())
-		{
-			u.setBalance(u.getBalance() - amt);
-			DatabaseManager.updateBalance(u.getUserName(), u.getBalance());
-			return("Withdrawal successful. New balance: " + u.getBalance());
-		}
-		else if(amt < 0) 
-			return "You cannot withdraw a negative amount of money; please use deposit to add funds";
-		else
-			return "Insufficient funds";
-	}
+	//The following methods should be in an AccountManager service class
 	
-	
-	public static String deposit(double amt)
-	{
-		//deposit funds if amount provided is positive
-		if(amt > 0)
-		{
-			u.setBalance(u.getBalance() + amt);
-			DatabaseManager.updateBalance(u.getUserName(), u.getBalance());
-			return("Deposit successful. New balance: " + u.getBalance());
-		}
-		else
-			return("You cannot deposit a negative amount of money; please use withdraw to remove funds");
-	}
-	
-	
-	public static String transfer(double amt, User targetUser)
-	{
-		if(amt > 0 && amt <= u.getBalance())
-		{
-			u.setBalance(u.getBalance() - amt);
-			targetUser.setBalance(targetUser.getBalance() + amt);
-			DatabaseManager.updateBalance(u.getUserName(), u.getBalance());
-			DatabaseManager.updateBalance(targetUser.getUserName(), targetUser.getBalance());
-			return("Transfer successful");
-		}
-		else if(amt < 0) 
-			return "You cannot transfer a negative amount of money; please use deposit to add funds";
-		else
-			return "Insufficient funds";
-	}
 
 }
