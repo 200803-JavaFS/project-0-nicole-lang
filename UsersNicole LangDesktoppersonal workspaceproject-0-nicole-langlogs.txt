@@ -1,3 +1,0 @@
-2020-08-13 17:35:05 INFO  Driver:128 - User  logged out
-2020-08-13 17:35:53 INFO  Driver:94 - New account hj1994 has been created and is pending activation
-2020-08-13 17:38:50 INFO  Driver:128 - User  logged out

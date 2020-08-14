@@ -55,7 +55,7 @@ public class Driver {
 						{
 							u.setAccount(DatabaseManager.getAccount(userN));
 							printLoginResult(u.getAccount().getStatus());
-							
+
 						}else if (userType.equals("Employee") || userType.equals("Admin"))
 						{
 							loginDone = true;
@@ -112,18 +112,18 @@ public class Driver {
 				//If there is a user logged in, display their basic info and prompt with available actions
 				System.out.println(UserManager.getUserInfo(u));
 				System.out.println(UserManager.getPrompt(u));
-				
+
 				input = scan.nextLine();
 				switch(input)
 				{
 				case "1":
 					if(userType.equals("Customer"))
-						{
-							System.out.print("Enter amount to deposit: $");
-							amt = scan.nextDouble();							
-							result = AccountManager.deposit(u.getAccount(), amt);
-							System.out.println(result);
-						}
+					{//option 1 for customers is deposit
+						System.out.print("Enter amount to deposit: $");
+						amt = scan.nextDouble();							
+						result = AccountManager.deposit(u.getAccount(), amt);
+						System.out.println(result);
+					}
 					else
 					{//option 1 for employee/admin is to approve a pending account
 						System.out.println("Enter the username of the account you want to approve:");
@@ -143,19 +143,44 @@ public class Driver {
 									+ "under Username " + input);
 						}
 					}
+					break;
+				case "2":
+					if(userType.equals("Customer"))
+					{//option 2 for customer is withdraw
+						System.out.print("Enter amount to withdraw: $");
+						amt = scan.nextDouble();							
+						result = AccountManager.withdraw(u.getAccount(), amt);
+						System.out.println(result);
+					}else
+					{//option 2 for employee/admin is deny a pending account
+						System.out.println("Enter the username of the account you want to deny:");
+						input = scan.nextLine();
+						targetAccount = DatabaseManager.getAccount(input);
+						//check if target user account is pending activation
+						if(targetAccount.getStatus().equals("Pending"))
+						{
+							DatabaseManager.closeAccount(input);
+							log.info("User account " + targetAccount.getUserName() + 
+									" was denied by super-user " + u.getUserName());
+						}
+						else if (targetAccount.getUserName().equals(""))
+						{
+							System.out.println("No bank account with that username");
+							log.info("Super-user " + u.getUserName() + "attempted to approve a nonexistent bank account "
+									+ "under Username " + input);
+						}
+					}
+				case "exit":
+					userType = "";
+					u = new User();
+					log.info("User " + u.getUserName() + " logged out");
+					loginDone = false;
+					break;
+					
+				default:
+					System.out.println("Invalid input");
+					break;
 				}
-				userType = "";
-				u = new User();
-				log.info("User " + u.getUserName() + " logged out");
-				loginDone = false;
-			}
-			//second check for if user is logged in, outside of initial info display
-			//prevents repeat display of lists in every loop iteration
-			if(loginDone)
-			{
-				//prompt with available actions
-				System.out.println(UserManager.getPrompt(u));
-				input = scan.nextLine();
 			}
 
 		}while (!done);
@@ -184,7 +209,7 @@ public class Driver {
 			System.out.println("Error: invalid account status");
 			break;
 		}
-		
+
 	}
 
 	public static void createAccount(String real, String user, String pwd) {
@@ -193,8 +218,9 @@ public class Driver {
 		u.setLastName(real.substring(real.indexOf(" ")));
 		u.setUserName(user);
 		u.setPassword(pwd);
-
+		u.setAccount(new Account(user, "Pending", null, 0.00, null));
 		DatabaseManager.createUser(u);
+		DatabaseManager.createAccount(u.getAccount());
 		System.out.println("Account requested. Please wait for access");
 	}
 

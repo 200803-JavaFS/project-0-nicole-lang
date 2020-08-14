@@ -3,6 +3,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import com.revature.models.Account;
 import com.revature.models.User;
@@ -17,7 +19,6 @@ public interface DatabaseManager {
 	//DAO interface to provide methods which run queries on the DeltaSavings database and return the results
 
 	//There should be a separate User manager and Account manager interface, for each table
-
 	public static void updateBalance(String currentUser, double newBalance)
 	{
 		try(Connection conn = ConnectionUtility.getConnection()){
@@ -49,7 +50,26 @@ public interface DatabaseManager {
 			statement.setString(++i, newUser.getLastName());
 			statement.setString(++i, newUser.getPassword());
 
-			statement.execute();
+			statement.executeUpdate();
+
+		}catch(SQLException e) { 
+			e.printStackTrace(); 
+		}
+	}
+	public static void createAccount(Account newAccount)
+	{
+		try(Connection conn = ConnectionUtility.getConnection()){
+
+			String sql = "Insert Into Accounts Values (?, ?, ?, ?)";
+			PreparedStatement statement = conn.prepareStatement(sql);
+
+			int i = 0;
+			statement.setString(++i, newAccount.getUserName());
+			statement.setString(++i, newAccount.getStatus());
+			statement.setString(++i, newAccount.getLinkedEmployee());
+			statement.setDouble(++i, newAccount.getBalance());
+			statement.setString(++i, saveDateTime());
+			statement.executeUpdate();
 
 		}catch(SQLException e) { 
 			e.printStackTrace(); 
@@ -98,6 +118,7 @@ public interface DatabaseManager {
 				a.setStatus(result.getString("account_status"));
 				a.setLinkedEmployee(result.getString("linked_employee"));
 				a.setBalance(result.getDouble("account_balance"));
+				a.setOpenTime(result.getString("open_time"));
 			}
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -175,8 +196,8 @@ public interface DatabaseManager {
 			while(result.next())
 			{
 				u.setUserName(result.getString("user_name"));
-				u.setFirstName(result.getString("first_name"));
-				u.setLastName(result.getString("last_name"));
+				u.setFirstName(result.getString("user_first_name"));
+				u.setLastName(result.getString("user_last_name"));
 				u.setUserType(result.getString("user_type"));
 				requests += u.toString() + "\n";
 			}
@@ -202,8 +223,8 @@ public interface DatabaseManager {
 			while(result.next())
 			{
 				u.setUserName(result.getString("user_name"));
-				u.setFirstName(result.getString("first_name"));
-				u.setLastName(result.getString("last_name"));
+				u.setFirstName(result.getString("user_first_name"));
+				u.setLastName(result.getString("user_last_name"));
 				u.setUserType(result.getString("user_type"));
 				allUsers += u.toString() + "\n";
 			}
@@ -244,6 +265,21 @@ public interface DatabaseManager {
 			e.printStackTrace();
 		}
 		
+	}
+	public static String saveDateTime()
+	{//access stored function to get a timestamp 
+		String sql = "Select get_current_time();";
+		try(Connection conn = ConnectionUtility.getConnection()){
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.executeQuery();
+			ResultSet result = statement.getResultSet();
+			return result.getString(1);
+			
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }

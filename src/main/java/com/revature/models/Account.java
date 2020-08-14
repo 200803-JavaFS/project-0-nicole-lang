@@ -10,19 +10,27 @@ public class Account implements Serializable{
 	private String status;
 	private String linkedEmployee;
 	private double balance;
+	private String openTime;
 	
 	public Account() {
 		userName = "";
 		status = "";
 		linkedEmployee = "";
 		balance = 0;
+		openTime = "";
 	}
-	public Account(String userName, String status, String linkedEmployee, double balance)
+	public Account(String userName, String status, String linkedEmployee, double balance, String openTime)
 	{//Overloaded constructor for loading existing account record
 		this.userName = userName;
 		this.status = status;
 		this.linkedEmployee = linkedEmployee;
 		this.balance = balance;
+		this.openTime = openTime;
+	}
+	@Override
+	public String toString()
+	{
+		return "Status = " + status + "\t\t Balance = " + balance;
 	}
 	//declare getters/setters
 	
@@ -55,6 +63,15 @@ public class Account implements Serializable{
 
 	public void setBalance(double balance) {
 		this.balance = balance;
+	}
+	public String getOpenTime()
+	{
+		return openTime;
+	}
+	
+	public void setOpenTime(String openTime) {
+		this.openTime = openTime;
+		
 	}
 
 }
