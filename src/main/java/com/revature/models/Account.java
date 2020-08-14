@@ -24,7 +24,6 @@ public class Account implements Serializable{
 		this.linkedEmployee = linkedEmployee;
 		this.balance = balance;
 	}
-	
 	//declare getters/setters
 	
 	public String getUserName() {

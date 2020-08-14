@@ -3,24 +3,32 @@ package com.revature.service;
 import com.revature.dao.DatabaseManager;
 import com.revature.models.User;
 
-public interface UserManager {
-
+public class UserManager {
+	
+	//hide the public no-arg constructor
+		private UserManager() {
+		}
+	//User info service interface
 	public static String getUserInfo(User u) {
-		String output = "Welcome, " + u.getFirstName() + " " + u.getLastName();
+		
+		String output = "Welcome, " + u.getFirstName() + " " + u.getLastName() + "\n";
 		switch(u.getUserType())
 		{//print the appropriate account information / available lists for the type of user
-		case "customer":
+		case "Customer":
 			//print account balance
+			output += "Balance: " + u.getAccount().getBalance();
 			break;
-		case "employee":
+		case "Employee":
 			output += "--Pending Account Requests--\n" + DatabaseManager.listRequests()
 			+ "\n\n--Your Active Customers--" + DatabaseManager.listEmpCustomers(u.getUserName());
 			break;
-		case "admin":
+		case "Admin":
 			output += "--Pending Account Requests--\n" + DatabaseManager.listRequests()
 			+ "--User List--\n" + DatabaseManager.listUsers();
 			break;
 		default:
+			//The default cases in these methods shouldn't be reached 
+			//because user type is validated in the driver
 			output = "Error: Invalid user type";
 			break;
 		}	
@@ -28,23 +36,24 @@ public interface UserManager {
 	}
 	public static String getPrompt(User u)
 	{
+		final String logoutPrompt = "\n(x) log out";
 		String actions;
 		switch(u.getUserType())
 		{
 		case "Customer":
 			actions = "Select operation:\n(1) deposit\n(2) withdraw\n(3) transfer"
-					+ "\n(x) log out";
+					+ logoutPrompt;
 			break;
 		case "Employee":
 			actions = "Select operation:\n(1) approve an account request"
-					+ "\n(2) delete an account request" + "\n(x) log out";
+					+ "\n(2) delete an account request" + logoutPrompt;
 			break;
 		case "Admin":
 			actions = "Select operation:\n(1) approve an account request"
-					+ "\n(2) deny an account request" + "\n(3) delete an account"  +"\n(x) log out";
+					+ "\n(2) deny an account request" + "\n(3) delete an account\n(4)access a banking account" + logoutPrompt;
 			break;
 		default:
-			actions = "Invalid user type!";
+			actions = "No prompt found";
 			break;
 		}
 		return actions;

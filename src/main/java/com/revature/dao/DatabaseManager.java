@@ -20,22 +20,51 @@ public interface DatabaseManager {
 
 	public static void updateBalance(String currentUser, double newBalance)
 	{
+		try(Connection conn = ConnectionUtility.getConnection()){
+
+			String sql = "Update Accounts Set account_balance = ? Where user_name = ? ";
+			PreparedStatement statement = conn.prepareStatement(sql);
+
+			statement.setDouble(1, newBalance);
+			statement.setString(2, currentUser);
+
+			statement.execute();
+
+		}catch(SQLException e) { 
+			e.printStackTrace(); 
+		}
 		//Update Users Set Balance = @newBalance Where UserName = @currentUser 
 	}
 	public static void createUser(User newUser)
 	{
-		//Insert Into Users Values (@userName, @activeUser, @userType, @realName, @password)
+		try(Connection conn = ConnectionUtility.getConnection()){
+
+			String sql = "Insert Into Users Values (?, ?, ?, ?, ?)";
+			PreparedStatement statement = conn.prepareStatement(sql);
+
+			int i = 0;
+			statement.setString(++i, newUser.getUserName());
+			statement.setString(++i, newUser.getUserType());
+			statement.setString(++i, newUser.getFirstName());
+			statement.setString(++i, newUser.getLastName());
+			statement.setString(++i, newUser.getPassword());
+
+			statement.execute();
+
+		}catch(SQLException e) { 
+			e.printStackTrace(); 
+		}
 	}
 	public static User login(String userName, String password)
 	{
 		User u = new User();
 		try(Connection conn = ConnectionUtility.getConnection()){
-			String sql = "Select * From Users Where UserName = ? And Password = ?";
+			String sql = "Select * From Users Where user_name = ? And user_password = ?";
 			PreparedStatement statement = conn.prepareStatement(sql);
-			
+
 			statement.setString(1, userName);
 			statement.setString(2, password);
-			
+
 			//executeQuery is used when we are retrieving a result set; execute is used otherwise
 			ResultSet result = statement.executeQuery();
 			if (result.next())
@@ -55,12 +84,25 @@ public interface DatabaseManager {
 	}
 	public static Account getAccount(String userName) {
 		Account a = new Account();
+		try(Connection conn = ConnectionUtility.getConnection()){
 
-		//if user has a bank account return the account object; if not return empty account
-		if(a.getUserName().equals(userName))
-			return a;
-		else
-			return new Account();
+			String sql = "Select * from Accounts where user_name = ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+
+			statement.setString(1, userName);
+			ResultSet result = statement.executeQuery();
+
+			if(result.next())
+			{
+				a.setUserName(result.getString("user_name"));
+				a.setStatus(result.getString("account_status"));
+				a.setLinkedEmployee(result.getString("linked_employee"));
+				a.setBalance(result.getDouble("account_balance"));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return a;
 	}
 	public static User getUser(String userName)
 	{
@@ -92,9 +134,23 @@ public interface DatabaseManager {
 	}
 	public static String getUserType(String userName)
 	{
-		String type = "Customer"; //default type
-		//Return only the user type of a selected user, to check permissions/what information to display
-		//Select UserType from Users Where UserName = @userName
+		String type = "";
+		try(Connection conn = ConnectionUtility.getConnection()){
+			//prepare SQL query
+			String sql = "Select user_type from users where user_name = ?;";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, userName);
+
+			//get result
+			ResultSet result = statement.executeQuery();
+			if (result.next())
+			{//store user type
+				type = result.getString("user_type");
+			}
+
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
 		return type;
 	}
 	public static String listEmpCustomers(String empUserName)
@@ -106,34 +162,88 @@ public interface DatabaseManager {
 	}
 	public static String listRequests()
 	{
-		String sql = "Select * from accounts where account_status = 'Pending';";
+		User u = new User();
+		String requests = "";
+		String sql = "Select * from users join accounts on (users.user_name = accounts.user_name)"
+				+ "where account_status = 'Pending';";
 		try(Connection conn = ConnectionUtility.getConnection()){
 
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet result = statement.executeQuery();
 
-			while(result.next()) {
-
+			//get all matching rows
+			while(result.next())
+			{
+				u.setUserName(result.getString("user_name"));
+				u.setFirstName(result.getString("first_name"));
+				u.setLastName(result.getString("last_name"));
+				u.setUserType(result.getString("user_type"));
+				requests += u.toString() + "\n";
 			}
 
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
-		String requests = "";
-		//Run SQL stored procedure for retrieving a list of inactive accounts
-		//return the retrieved list in String format
+
 		return requests;
+
 	}
 	public static String listUsers()
 	{
 		String allUsers = "";
+		User u = new User();
+		String sql = "Select * from users order by user_name;";
+		try(Connection conn = ConnectionUtility.getConnection()){
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet result = statement.executeQuery();
+
+			//get all matching rows
+			while(result.next())
+			{
+				u.setUserName(result.getString("user_name"));
+				u.setFirstName(result.getString("first_name"));
+				u.setLastName(result.getString("last_name"));
+				u.setUserType(result.getString("user_type"));
+				allUsers += u.toString() + "\n";
+			}
+
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
 		//retrieve list of all users in the database
 		//Select * From Users Order by UserName
 		return allUsers;
 	}
-	public static void deleteUser(String userName)
-	{
-		//run query to set an account's status to closed
+	public static void approveAccount(String userName, String empName) {
+		//set a given customer's account status to Open and their linked employee to whoever approved it
+		String sql = "Update accounts set account_status = 'Open', linked_employee = ? where user_name = ?";
+		try(Connection conn = ConnectionUtility.getConnection()){
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, empName);
+			statement.setString(2, userName);
+			statement.executeUpdate();
+			
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		//set 
+		
+	}
+	public static void closeAccount(String userName) {
+		//set a given customer's account status to Closed
+		String sql = "Update accounts set account_status = 'Closed' where user_name = ?";
+		try(Connection conn = ConnectionUtility.getConnection()){
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, userName);
+			statement.executeUpdate();
+			
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }

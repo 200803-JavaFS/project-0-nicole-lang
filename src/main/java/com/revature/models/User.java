@@ -20,6 +20,7 @@ public class User implements Serializable{
 		lastName = "";
 		password = "";
 		userType = "Customer";
+		bankAccount = new Account();
 	}
 	
 	public User(String userName, String firstName, String lastName, String password, String userType) {
@@ -29,8 +30,14 @@ public class User implements Serializable{
 		this.lastName = lastName;
 		this.password = password;
 		this.userType = userType;
+		bankAccount = new Account();
 	}
-	
+	@Override
+	public String toString()
+	{//usertype		Username = username		Name = firstname lastname
+		return (userType + "\t\tUsername = "+ userName + "\t\tName = "+ firstName + " " + lastName 
+				+ bankAccount.toString());
+	}
 	//declare getters and setters
 
 	public String getUserName() {
@@ -72,4 +79,15 @@ public class User implements Serializable{
 	public void setUserType(String type) {
 		userType = type;
 	}
+
+	public void setAccount(Account account) {
+		//Assign a bank account to a customer user
+		bankAccount = account;
+		
+	}
+
+	public Account getAccount() {
+		return bankAccount;
+	}
+
 }
