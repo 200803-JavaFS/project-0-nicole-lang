@@ -12,7 +12,7 @@ import com.revature.models.User;
 public class Driver {
 	//static variables accessible by all driver methods
 	public static String input;
-	public static String result;
+	public static double result;
 	public static double amt;
 	public static User u;
 	public static String userType;
@@ -122,7 +122,7 @@ public class Driver {
 						System.out.print("Enter amount to deposit: $");
 						amt = scan.nextDouble();							
 						result = AccountManager.deposit(u.getAccount(), amt);
-						System.out.println(result);
+						u.getAccount().setBalance(result);
 					}
 					else
 					{//option 1 for employee/admin is to approve a pending account
@@ -150,7 +150,7 @@ public class Driver {
 						System.out.print("Enter amount to withdraw: $");
 						amt = scan.nextDouble();							
 						result = AccountManager.withdraw(u.getAccount(), amt);
-						System.out.println(result);
+						u.getAccount().setBalance(result);
 					}else
 					{//option 2 for employee/admin is deny a pending account
 						System.out.println("Enter the username of the account you want to deny:");
@@ -168,6 +168,22 @@ public class Driver {
 							System.out.println("No bank account with that username");
 							log.info("Super-user " + u.getUserName() + "attempted to approve a nonexistent bank account "
 									+ "under Username " + input);
+						}
+					}
+
+					break;
+				case "3":
+					if(userType.equals("Customer"))
+					{//Option 3 for customers is transfer
+						System.out.println("Enter the username of the account you want to transfer to:");
+						input = scan.nextLine();
+						if((DatabaseManager.getAccount(input)).getStatus().equals("Open"))
+						{
+							//get target account
+							targetAccount = DatabaseManager.getAccount(input);
+							System.out.println("Enter amount to transfer: $");
+							amt = scan.nextDouble();
+							AccountManager.transfer(u.getAccount(), amt, targetAccount);
 						}
 					}
 				case "exit":

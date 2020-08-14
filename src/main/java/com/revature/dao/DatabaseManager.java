@@ -60,7 +60,7 @@ public interface DatabaseManager {
 	{
 		try(Connection conn = ConnectionUtility.getConnection()){
 
-			String sql = "Insert Into Accounts Values (?, ?, ?, ?)";
+			String sql = "Insert Into Accounts Values (?, ?, ?, ?, ?)";
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			int i = 0;
@@ -118,7 +118,7 @@ public interface DatabaseManager {
 				a.setStatus(result.getString("account_status"));
 				a.setLinkedEmployee(result.getString("linked_employee"));
 				a.setBalance(result.getDouble("account_balance"));
-				a.setOpenTime(result.getString("open_time"));
+				a.setOpenTime(result.getString("open_timestamp"));
 			}
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -249,7 +249,6 @@ public interface DatabaseManager {
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
-		//set 
 		
 	}
 	public static void closeAccount(String userName) {
