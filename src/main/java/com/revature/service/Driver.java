@@ -169,18 +169,19 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 						//check if target user account is pending activation
 						if(targetAccount.getStatus().equals("Pending"))
 						{
-							DatabaseManager.closeAccount(input);
-							log.info("User account " + targetAccount.getUserName() + 
+							DatabaseManager.denyAccountRequest(input, u.getUserName(), "Denied");
+							log.info("Account request for username " + targetAccount.getUserName() + 
 									" was denied by super-user " + u.getUserName());
 						}
 						else if (targetAccount.getUserName().equals(""))
 						{
-							System.out.println("No bank account with that username");
-							log.info("Super-user " + u.getUserName() + "attempted to approve a nonexistent bank account "
+							System.out.println("No account request with that username");
+							log.info("Super-user " + u.getUserName() + "attempted to deny a nonexistent account request "
 									+ "under Username " + input);
-						}
-					}
+						}else
 
+							System.out.println("Only accounts with status 'Pending' can be denied.");
+					}
 					break;
 				case "3":
 					if(userType.equals("Customer"))
@@ -196,10 +197,32 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 							AccountManager.transfer(u.getAccount(), amt, targetAccount);
 						}
 					}
-					else
-					{//Option 3 for employee/admin is 
-
-					}
+					else if (userType.equals("Admin"))
+					{//Option 3 for admin is close an account
+						System.out.println("Enter the username of the account to close:");
+						input = scan.nextLine();
+						if((DatabaseManager.getAccount(input)).getStatus().equals("Open")) {
+							targetAccount = DatabaseManager.getAccount(input);
+							DatabaseManager.closeAccount(input);
+							log.info("User account " + targetAccount.getUserName() + 
+									" was closed by admin " + u.getUserName());
+						}
+						else if (targetAccount.getUserName().equals(""))
+						{
+							System.out.println("No bank account with that username");
+							log.info("Admin " + u.getUserName() + "attempted to close a nonexistent bank "
+									+ "account under Username " + input);
+						}else
+							System.out.println("Only accounts with status 'Open' can be closed.");
+					}else
+						System.out.println("Invalid selection");
+					break;
+				case "4":
+					if(userType.equals("Admin"))
+					{
+						//todo: implement allowing admin users to access any customer's account info
+					}else
+						System.out.println("Invalid selection");
 					break;
 				case "x":
 					userType = "";
@@ -210,7 +233,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 					break;
 
 				default:
-					System.out.println("Invalid input");
+					System.out.println("Invalid selection");
 					break;
 				}
 			}
@@ -234,9 +257,15 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 					+ "been activated yet.");
 			System.out.println("This account hasn't been activated yet, try again later");
 			break;
+		case "Denied":
+			log.warn("User " + u.getUserName() + " attempted to log in to their account but their"
+					+ "account creation request was denied by " + u.getAccount().getLinkedEmployee());
+			System.out.println("Sorry, your account request has been denied. Contact an admin for assistance.");
+			break;
 		case "Closed":
 			log.warn("User " + u.getUserName() + " attempted to log in to their closed account");
-			System.out.println("This account has been closed. Contact admin for assistance.");
+			System.out.println("This account has been closed. If you believe this is an error, please"
+					+ "contact an admin for assistance.");
 			break;
 		default:
 			log.error("Login method failed to prevent invalid user");

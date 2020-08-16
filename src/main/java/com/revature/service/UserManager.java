@@ -47,7 +47,7 @@ public interface UserManager {
 			break;
 		case "Admin":
 			actions = "Select operation:\n(1) approve an account request"
-					+ "\n(2) deny an account request" + "\n(3) delete an account\n(4)access a banking account" + logoutPrompt;
+					+ "\n(2) deny an account request" + "\n(3) close an account\n(4) access a customer account" + logoutPrompt;
 			break;
 		default:
 			actions = "No prompt found";

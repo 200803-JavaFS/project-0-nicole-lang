@@ -273,7 +273,25 @@ public interface DatabaseManager {
 		}
 		
 	}
-	public static void closeAccount(String userName) {
+
+	public static void denyAccountRequest(String userName, String linkedEmployee, String status) {
+		//set a given customer's account status to Closed
+				String sql = "Update accounts set account_status = 'Denied', linked_employee = ? where user_name = ?";
+				try(Connection conn = ConnectionUtility.getConnection()){
+
+					PreparedStatement statement = conn.prepareStatement(sql);
+					statement.setString(1, status);
+					statement.setString(2, linkedEmployee);
+					statement.setString(3, userName);
+					statement.executeUpdate();
+					
+				}catch(SQLException e) {
+					e.printStackTrace();
+				}
+		
+	}
+	public static void closeAccount(String userName)
+	{
 		//set a given customer's account status to Closed
 		String sql = "Update accounts set account_status = 'Closed' where user_name = ?";
 		try(Connection conn = ConnectionUtility.getConnection()){
@@ -285,7 +303,7 @@ public interface DatabaseManager {
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 	public static Timestamp saveDateTime()
 	{//access stored function to get a timestamp 
