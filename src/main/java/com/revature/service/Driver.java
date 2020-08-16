@@ -11,14 +11,22 @@ import com.revature.models.User;
 
 public class Driver implements UserManager, AccountManager, DatabaseManager{
 	//static variables accessible by all driver methods
+	private static String logMessage;
 	private static String input;
 	private static double result;
 	private static double amt;
 	private static User u;
 	private static String userType;
 	private static Account targetAccount;
+	private static final String selectionError = "Invalid Selection";
 	private static final Logger log = LogManager.getLogger();
 	
+	//These arrays are used to save memory by declaring several constants for user types and statuses
+	//The employee user type is not specifically used in any checks so it is excluded
+	private static final String[] types = {"Customer", "Admin"};
+	private static final String[] statuses = {"Pending", "Denied", "Open", "Closed"};
+	
+	//main method
 	public static void main(String[] args){
 
 		//initialize variables
@@ -52,14 +60,15 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 						u = DatabaseManager.login(userN, passW);
 						userType = u.getUserType();
 
-						if(userType.equals("Customer"))
+						if(userType.equals(types[0]))
 						{//if the user is a customer, get their linked account
 							u.setAccount(DatabaseManager.getAccount(userN));
 							printLoginResult(u.getAccount().getStatus());
 						}
 						//finish login procedure
 						loginDone = true;
-						log.info("User " + u.getUserName() + " logged in");
+						logMessage = "User " + u.getUserName() + " logged in";
+						log.info(logMessage);
 						System.out.println("Login successful");
 					}else
 						System.out.println("User " + userN + " does not exist");
@@ -79,21 +88,26 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 							userN = scan.nextLine();
 							if(!UserManager.userExists(userN))
 							{
-								System.out.println("Username " + u.getUserName() + " is available. Enter a password:");
+								System.out.println("Username " + u.getUserName() + " is available. "
+										+ "Enter a password:");
 								passW = scan.nextLine();
 								if(passW.isEmpty())
-								{//exit loop if no password is provided
+									//skip account creation if no password is provided
 									System.out.println("Password cannot be blank. Try again");
-									done = true;
+								else {
+									createAccount(fullN, userN, passW);
+									logMessage = "New account " + userN + " has been created and is "
+											+ "pending activation";
+									log.info(logMessage);
 								}
-								createAccount(fullN, userN, passW);
-								log.info("New account " + userN + " has been created and is pending activation");
 								done = true;
 							}
 							else				
 							{//prevent duplicate usernames
-								log.info("User failed to create account under taken username " + userN);
-								System.out.println("That username is taken, try another (or press enter to cancel)");
+								logMessage = "User failed to create account under taken username " + userN;
+								log.error(logMessage);
+								System.out.println("That username is taken, try another "
+										+ "(or press enter to cancel)");
 							}
 						}else
 						{
@@ -113,7 +127,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 					break;
 				}
 				default:
-					System.out.println("Invalid selection");
+					System.out.println(selectionError);
 					break;
 				}
 			}
@@ -121,121 +135,120 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 			{
 				//If there is a user logged in, display their basic info and prompt with available actions
 				System.out.println(UserManager.getUserInfo(u));
-				System.out.println(UserManager.getPrompt(u.getUserType()));
+				System.out.println(UserManager.getPrompt(userType));
 
 				input = scan.nextLine();
-				switch(input)
-				{
-				case "1":
-					if(userType.equals("Customer"))
-					{//option 1 for customers is deposit
-						System.out.print("Enter amount to deposit: $");
-						amt = scan.nextDouble();							
-						result = AccountManager.deposit(u.getAccount(), amt);
-						u.getAccount().setBalance(result);
-					}
-					else
-					{//option 1 for employee/admin is to approve a pending account
-						System.out.println("Enter the username of the account you want to approve:");
-						input = scan.nextLine();
-						targetAccount = DatabaseManager.getAccount(input);
-						//check if target user account is pending activation
-						if(targetAccount.getStatus().equals("Pending"))
-						{
-							DatabaseManager.approveAccount(input, u.getUserName());
-							log.info("User account " + targetAccount.getUserName() + 
-									" was approved by super-user " + u.getUserName());
-						}
-						else if (targetAccount.getUserName().equals(""))
-						{
-							System.out.println("No bank account with that username");
-							log.info("Super-user " + u.getUserName() + "attempted to approve a nonexistent bank account "
-									+ "under Username " + input);
-						}
-					}
-					break;
-				case "2":
-					if(userType.equals("Customer"))
-					{//option 2 for customer is withdraw
-						System.out.print("Enter amount to withdraw: $");
-						amt = scan.nextDouble();							
-						result = AccountManager.withdraw(u.getAccount(), amt);
-						u.getAccount().setBalance(result);
-					}else
-					{//option 2 for employee/admin is deny a pending account
-						System.out.println("Enter the username of the account you want to deny:");
-						input = scan.nextLine();
-						targetAccount = DatabaseManager.getAccount(input);
-						//check if target user account is pending activation
-						if(targetAccount.getStatus().equals("Pending"))
-						{
-							DatabaseManager.denyAccountRequest(input, u.getUserName(), "Denied");
-							log.info("Account request for username " + targetAccount.getUserName() + 
-									" was denied by super-user " + u.getUserName());
-						}
-						else if (targetAccount.getUserName().equals(""))
-						{
-							System.out.println("No account request with that username");
-							log.info("Super-user " + u.getUserName() + "attempted to deny a nonexistent account request "
-									+ "under Username " + input);
-						}else
-
-							System.out.println("Only accounts with status 'Pending' can be denied.");
-					}
-					break;
-				case "3":
-					if(userType.equals("Customer"))
-					{//Option 3 for customers is transfer
-						System.out.println("Enter the username of the account you want to transfer to:");
-						input = scan.nextLine();
-						if((DatabaseManager.getAccount(input)).getStatus().equals("Open"))
-						{
-							//get target account
-							targetAccount = DatabaseManager.getAccount(input);
-							System.out.println("Enter amount to transfer: $");
-							amt = scan.nextDouble();
-							AccountManager.transfer(u.getAccount(), amt, targetAccount);
-						}
-					}
-					else if (userType.equals("Admin"))
-					{//Option 3 for admin is close an account
-						System.out.println("Enter the username of the account to close:");
-						input = scan.nextLine();
-						if((DatabaseManager.getAccount(input)).getStatus().equals("Open")) {
-							targetAccount = DatabaseManager.getAccount(input);
-							DatabaseManager.closeAccount(input);
-							log.info("User account " + targetAccount.getUserName() + 
-									" was closed by admin " + u.getUserName());
-						}
-						else if (targetAccount.getUserName().equals(""))
-						{
-							System.out.println("No bank account with that username");
-							log.info("Admin " + u.getUserName() + "attempted to close a nonexistent bank "
-									+ "account under Username " + input);
-						}else
-							System.out.println("Only accounts with status 'Open' can be closed.");
-					}else
-						System.out.println("Invalid selection");
-					break;
-				case "4":
-					if(userType.equals("Admin"))
+				if(userType.equals(types[0]))
+					doBanking(u.getAccount(), input, scan);
+				else if (!userType.isEmpty()){
+					switch(input)
 					{
-						//todo: implement allowing admin users to access any customer's account info
-					}else
-						System.out.println("Invalid selection");
-					break;
-				case "x":
-					userType = "";
-					log.info("User " + u.getUserName() + " logged out");
-					System.out.println("Logged out of " + u.getUserName());
-					u = new User();
-					loginDone = false;
-					break;
+					case "1":
+						//option 1 for employee/admin is to approve a pending account
+							System.out.println("Enter the username of the account you want to approve:");
+							input = scan.nextLine();
+							targetAccount = DatabaseManager.getAccount(input);
+							//check if target user account is pending activation
+							if(targetAccount.getStatus().equals(statuses[0]))//Pending
+							{
+								DatabaseManager.approveAccount(input, u.getUserName());
+								logMessage = "User account " + targetAccount.getUserName() + 
+										" was approved by super-user " + u.getUserName();
+								log.info(logMessage);
+							}
+							else if (targetAccount.getUserName().equals(""))
+							{
+								System.out.println("No bank account with that username");
+								logMessage = "Super-user " + u.getUserName() + "attempted to "
+										+ "approve a nonexistent bank account under Username " + input;
+								log.error(logMessage);
+							}
+						
+						break;
+					case "2":
+						{//option 2 for employee/admin is deny a pending account
+							System.out.println("Enter the username of the account you want to deny:");
+							input = scan.nextLine();
+							targetAccount = DatabaseManager.getAccount(input);
+							//check if target user account is pending activation
+							if(targetAccount.getStatus().equals(statuses[0]))//Pending
+							{
+								DatabaseManager.denyAccountRequest(input, u.getUserName(), statuses[1]);
+								logMessage = "Account request for username " + targetAccount.getUserName() 
+										+ " was denied by super-user " + u.getUserName();
+								log.info(logMessage);
+							}
+							else if (targetAccount.getUserName().equals(""))
+							{
+								System.out.println("No account request with that username");
+								logMessage = "Super-user " + u.getUserName() + "attempted to deny a "
+										+ "nonexistent account request under Username " + input;
+								log.error(logMessage);
+							}else
 
-				default:
-					System.out.println("Invalid selection");
-					break;
-				}
+								System.out.println("Only accounts with status 'Pending' can be denied.");
+						}
+						break;
+					case "3":						
+						if (userType.equals(types[1]))//Admin
+						{//Option 3 for admin is close an account
+							System.out.println("Enter the username of the account to close:");
+							input = scan.nextLine();
+							if((DatabaseManager.getAccount(input)).getStatus().equals(statuses[2]))//Open 
+							{
+								targetAccount = DatabaseManager.getAccount(input);
+								DatabaseManager.closeAccount(input);
+								log.info("User account " + targetAccount.getUserName() + 
+										" was closed by admin " + u.getUserName());
+							}
+							else if (targetAccount.getUserName().equals(""))
+							{
+								System.out.println("No bank account with that username");
+								logMessage = "Admin " + u.getUserName() + "attempted to close a "
+										+ "nonexistent bank account under Username " + input;
+								log.info(logMessage);
+							}else
+								System.out.println("Only accounts with status 'Open' can be closed.");
+						}else
+							System.out.println("Invalid selection");
+						break;
+					case "4":
+						if(userType.equals(types[1]))//Admin
+						{
+							System.out.println("Enter the username of the account you want to manage");
+							input = scan.nextLine();
+							if(UserManager.userExists(input) && DatabaseManager.getAccount(input)
+									.getOpenTime().equals(null))
+							{//get the requested customer account and perform banking actions
+								targetAccount = DatabaseManager.getAccount(input);
+								System.out.println(UserManager.getPrompt(types[0]));//Customer
+								while(!input.isEmpty())
+								{
+									input = scan.nextLine();
+									doBanking(targetAccount, input, scan);
+								}
+							}
+						}else
+							System.out.println(selectionError);
+						break;
+					case "x":
+						userType = "";
+						logMessage = "User " + u.getUserName() + " logged out";
+						log.info(logMessage);
+						System.out.println("Logged out of " + u.getUserName());
+						
+						//reset user object and loop control variable
+						u = new User();
+						loginDone = false;
+						break;
+
+					default:
+						System.out.println(selectionError);
+						break;
+					}
+				}else
+					System.out.println("Error: invalid user type");
+				
 			}
 
 		}while (!done);
@@ -287,6 +300,51 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		DatabaseManager.createUser(u);
 		DatabaseManager.createAccount(u.getAccount());
 		System.out.println("Account request submitted. Please wait for access");
+	}
+	public static void doBanking(Account a, String selection, Scanner scan)
+	{
+		String currentUser = u.getUserName();
+		Account targetAccount = new Account();
+		switch(selection)
+		{
+		case "1":
+			System.out.print("Enter amount to deposit: $");
+			amt = scan.nextDouble();							
+			result = AccountManager.deposit(a, amt, currentUser);
+			a.setBalance(result);
+			break;
+		case "2":
+			System.out.print("Enter amount to withdraw: $");
+			amt = scan.nextDouble();							
+			result = AccountManager.withdraw(a, amt, currentUser);
+			a.setBalance(result);
+			break;
+		case "3":
+			System.out.println("Enter the username of the account you want to transfer to:");
+			input = scan.nextLine();
+			if(!DatabaseManager.getAccount(input).getStatus().equals(""))
+			{//only allow transfer if receiving account exists and is open
+				targetAccount = DatabaseManager.getAccount(input);
+				if(targetAccount.getStatus().equals(statuses[2]))//Open
+				{
+					System.out.println("Enter amount to transfer: $");
+					amt = scan.nextDouble();
+					AccountManager.transfer(a, amt, targetAccount, currentUser);
+				}else
+				{
+					logMessage = "Transfer to account" + input + " from account " + a.getUserName() 
+					+ " failed. Target account is not open and cannot receive funds. Initiating user: "
+					+ currentUser;
+					log.error(logMessage);
+					System.out.println("Target account is not open. Transfer cancelled");
+				}
+			}
+			break;
+		default:
+			System.out.println(selectionError);
+			break;
+		}
+
 	}
 
 }

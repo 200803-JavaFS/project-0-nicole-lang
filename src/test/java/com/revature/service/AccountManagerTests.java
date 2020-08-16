@@ -29,7 +29,7 @@ public class AccountManagerTests {
 	public void testWithdraw() {
 		//Withdraw $200 from account should leave $800 as new balance
 		System.out.println("Testing bank withdrawal");
-		assertTrue(AccountManager.withdraw(a, 200.00) == 800.00);	
+		assertTrue(AccountManager.withdraw(a, 200.00, "nlang") == 800.00);	
 		System.out.println("Withdraw successful");
 	}
 
@@ -37,7 +37,7 @@ public class AccountManagerTests {
 	public void testDeposit() {
 		//Deposit $200 into account should leave $1000 as new balance
 		System.out.println("Testing bank deposit");
-		assertTrue(AccountManager.deposit(a, 200.00) == 1000.00);	
+		assertTrue(AccountManager.deposit(a, 200.00, "nlang") == 1000.00);	
 		System.out.println("Deposit successful");
 	}
 
@@ -45,7 +45,7 @@ public class AccountManagerTests {
 	public void testTransfer() {
 		//Transfer $1000 into other account should leave $0 in account 1 and $1000 in account 2
 		System.out.println("Testing bank withdrawal");
-		double[] newBals = AccountManager.transfer(a, 1000.00, transferA);
+		double[] newBals = AccountManager.transfer(a, 1000.00, transferA, "nlang");
 		assert(newBals[0] == 0.00);
 		System.out.println("Transfer step 1 (withdraw) successful");
 		assertTrue(newBals[1] == 1000.00);

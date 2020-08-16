@@ -15,6 +15,8 @@ public interface UserManager {
 			//print account balance
 			output += "Balance: " + u.getAccount().getBalance();
 			break;
+			
+			//for employees and admins, a list of available customer information is printed once upon login
 		case "Employee":
 			output += "--Pending Account Requests--\n" + DatabaseManager.listRequests()
 			+ "\n\n--Your Active Customers--" + DatabaseManager.listEmpCustomers(u.getUserName());

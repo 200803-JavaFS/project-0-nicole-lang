@@ -11,10 +11,10 @@ import com.revature.utils.ConnectionUtility;
 public interface DatabaseManager {
 	
 	//DAO interface to provide methods which run queries on the DeltaSavings database and return the results
-
 	//There should be a separate User manager and Account manager interface, for each table
+	
 	public static void updateBalance(String currentUser, double newBalance)
-	{
+	{//called from deposit, withdraw, and transfer methods to update the account record's balance
 		try(Connection conn = ConnectionUtility.getConnection()){
 
 			String sql = "Update Accounts Set account_balance = ? Where user_name = ? ";
@@ -28,8 +28,8 @@ public interface DatabaseManager {
 		}catch(SQLException e) { 
 			e.printStackTrace(); 
 		}
-		//Update Users Set Balance = @newBalance Where UserName = @currentUser 
 	}
+	
 	public static void createUser(User newUser)
 	{//add a new user to the Users table
 		try(Connection conn = ConnectionUtility.getConnection()){
@@ -50,6 +50,7 @@ public interface DatabaseManager {
 			e.printStackTrace(); 
 		}
 	}
+	
 	public static void createAccount(Account newAccount)
 	{//add a new account to the Accounts table
 		try(Connection conn = ConnectionUtility.getConnection()){
@@ -69,6 +70,7 @@ public interface DatabaseManager {
 			e.printStackTrace(); 
 		}
 	}
+	
 	public static User login(String userName, String password)
 	{//retrieve the personal information of a logged-in user
 		User u = new User();
@@ -171,6 +173,7 @@ public interface DatabaseManager {
 	}
 	public static String listEmpCustomers(String empUserName)
 	{//retrieve a list of accounts with the current user as their linked employee
+		StringBuilder builder = new StringBuilder();
 		Account a = new Account();
 		String empCustomers = "";
 		String sql = "Select * from accounts where linked_employee = ?;";
@@ -189,11 +192,14 @@ public interface DatabaseManager {
 				a.setLinkedEmployee(result.getString("linked_employee"));
 				a.setOpenTime(result.getTimestamp("open_timestamp"));
 				//Account.toString() doesn't include the username because it's usually accessed alongside User.toString()
-				empCustomers += a.getUserName() + "\t" + a.toString() + "\n";
+				builder.append(a.getUserName() + "\t" + a.toString() + "\n");
 			}
 
 		}catch(SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			empCustomers = builder.toString();
 		}
 		if(empCustomers.isEmpty())
 			return "none\n";
@@ -202,6 +208,7 @@ public interface DatabaseManager {
 	}
 	public static String listRequests()
 	{//retrieve a list of pending account requests; formatted using overridden toString()
+		StringBuilder builder = new StringBuilder();
 		Account a = new Account();
 		String requests = "";
 		String sql = "Select * from accounts where account_status = 'Pending';";
@@ -218,10 +225,13 @@ public interface DatabaseManager {
 				a.setLinkedEmployee(result.getString("linked_employee"));
 				a.setOpenTime(result.getTimestamp("open_timestamp"));
 				//Account.toString() doesn't include the username because it's usually accessed alongside User.toString()
-				requests += a.getUserName() + "\t" + a.toString() + "\n";
+				builder.append(a.getUserName() + "\t" + a.toString() + "\n");
 			}
 		}catch(SQLException e) {
 			e.printStackTrace();
+		}
+		finally {
+			requests = builder.toString();
 		}
 		if(requests.isEmpty())
 			return "none\n";
@@ -231,6 +241,8 @@ public interface DatabaseManager {
 	}
 	public static String listUsers()
 	{
+		//retrieve list of all users in the database plus their account info if it exists
+		StringBuilder builder = new StringBuilder();
 		String allUsers = "";
 		User u = new User();
 		String sql = "Select * from users order by user_name;";
@@ -246,19 +258,26 @@ public interface DatabaseManager {
 				u.setFirstName(result.getString("user_first_name"));
 				u.setLastName(result.getString("user_last_name"));
 				u.setUserType(result.getString("user_type"));
-				allUsers += u.toString() + "\n";
+				builder.append(u.toString());
+				//also print account info if applicable
+				if(u.getUserType().equals("Customer")) {
+					builder.append(u.getAccount().toString());
+				}else
+					builder.append("\n");
 			}
 
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
-		//retrieve list of all users in the database
-		//Select * From Users Order by UserName
+		finally {
+			allUsers = builder.toString();
+		}
 		return allUsers;
 	}
 	public static void approveAccount(String userName, String empName) {
 		//set a given customer's account status to Open and their linked employee to whoever approved it
-		String sql = "Update accounts set account_status = 'Open', linked_employee = ?, open_timestamp = ? where user_name = ?";
+		String sql = "Update accounts set account_status = 'Open', linked_employee = ?, "
+				+ "open_timestamp = ? where user_name = ?;";
 		try(Connection conn = ConnectionUtility.getConnection()){
 
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -276,7 +295,8 @@ public interface DatabaseManager {
 
 	public static void denyAccountRequest(String userName, String linkedEmployee, String status) {
 		//set a given customer's account status to Closed
-				String sql = "Update accounts set account_status = 'Denied', linked_employee = ? where user_name = ?";
+				String sql = "Update accounts set account_status = 'Denied', linked_employee = ? "
+						+ "where user_name = ?;";
 				try(Connection conn = ConnectionUtility.getConnection()){
 
 					PreparedStatement statement = conn.prepareStatement(sql);
