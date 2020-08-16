@@ -3,11 +3,8 @@ package com.revature.service;
 import com.revature.dao.DatabaseManager;
 import com.revature.models.User;
 
-public class UserManager {
-	
-	//hide the public no-arg constructor
-		private UserManager() {
-		}
+public interface UserManager {
+		
 	//User info service interface
 	public static String getUserInfo(User u) {
 		
@@ -34,11 +31,11 @@ public class UserManager {
 		}	
 		return output;
 	}
-	public static String getPrompt(User u)
-	{
+	public static String getPrompt(String type)
+	{//returns a user actions prompt specific to the current user type
 		final String logoutPrompt = "\n(x) log out";
 		String actions;
-		switch(u.getUserType())
+		switch(type)
 		{
 		case "Customer":
 			actions = "Select operation:\n(1) deposit\n(2) withdraw\n(3) transfer"

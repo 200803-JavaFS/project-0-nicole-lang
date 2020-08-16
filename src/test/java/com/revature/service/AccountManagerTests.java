@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class AccountManagerTests {
 	public void testWithdraw() {
 		//Withdraw $200 from account should leave $800 as new balance
 		System.out.println("Testing bank withdrawal");
-		assert(AccountManager.withdraw(a, 200.00) == 800.00);	
+		assertTrue(AccountManager.withdraw(a, 200.00) == 800.00);	
 		System.out.println("Withdraw successful");
 	}
 
@@ -38,7 +37,7 @@ public class AccountManagerTests {
 	public void testDeposit() {
 		//Deposit $200 into account should leave $1000 as new balance
 		System.out.println("Testing bank deposit");
-		assert(AccountManager.deposit(a, 200.00) == 1000.00);	
+		assertTrue(AccountManager.deposit(a, 200.00) == 1000.00);	
 		System.out.println("Deposit successful");
 	}
 
@@ -49,7 +48,7 @@ public class AccountManagerTests {
 		double[] newBals = AccountManager.transfer(a, 1000.00, transferA);
 		assert(newBals[0] == 0.00);
 		System.out.println("Transfer step 1 (withdraw) successful");
-		assert(newBals[1] == 1000.00);
+		assertTrue(newBals[1] == 1000.00);
 		System.out.println("Transfer step 2 (deposit) successful");
 	}
 	@AfterClass

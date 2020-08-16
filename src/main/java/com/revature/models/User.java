@@ -5,7 +5,8 @@ import java.io.Serializable;
 public class User implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-
+	//The User class represents a single record in the Users table.
+	
 	private String userName;	
 	private String firstName;
 	private String lastName;
@@ -19,7 +20,7 @@ public class User implements Serializable{
 		firstName = "";
 		lastName = "";
 		password = "";
-		userType = "Customer";
+		userType = "";
 		bankAccount = new Account();
 	}
 	

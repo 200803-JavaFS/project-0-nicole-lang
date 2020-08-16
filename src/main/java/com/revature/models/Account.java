@@ -1,25 +1,25 @@
 package com.revature.models;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 public class Account implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	//The Account class represents a single record stored in the Accounts table.
+	//The Account class represents a single customer account record.
 	
 	private String userName;
 	private String status;
 	private String linkedEmployee;
 	private double balance;
-	private String openTime;
+	private Timestamp openTime;
 	
 	public Account() {
 		userName = "";
 		status = "";
 		linkedEmployee = "";
 		balance = 0;
-		openTime = "";
 	}
-	public Account(String userName, String status, String linkedEmployee, double balance, String openTime)
+	public Account(String userName, String status, String linkedEmployee, double balance, Timestamp openTime)
 	{//Overloaded constructor for loading existing account record
 		this.userName = userName;
 		this.status = status;
@@ -64,13 +64,13 @@ public class Account implements Serializable{
 	public void setBalance(double balance) {
 		this.balance = balance;
 	}
-	public String getOpenTime()
+	public Timestamp getOpenTime()
 	{
 		return openTime;
 	}
 	
-	public void setOpenTime(String openTime) {
-		this.openTime = openTime;
+	public void setOpenTime(Timestamp timestamp) {
+		this.openTime = timestamp;
 		
 	}
 

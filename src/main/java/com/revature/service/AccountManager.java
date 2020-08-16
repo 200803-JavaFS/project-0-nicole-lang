@@ -6,11 +6,7 @@ import org.apache.logging.log4j.Logger;
 import com.revature.dao.DatabaseManager;
 import com.revature.models.Account;
 
-public class AccountManager {
-	
-	//hide the public no-arg constructor
-	private AccountManager() {
-	}
+public interface AccountManager {
 
 	public static final Logger log = LogManager.getLogger();
 	//Bank account service interface

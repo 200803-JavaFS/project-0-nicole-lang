@@ -9,15 +9,16 @@ import com.revature.dao.DatabaseManager;
 import com.revature.models.Account;
 import com.revature.models.User;
 
-public class Driver {
+public class Driver implements UserManager, AccountManager, DatabaseManager{
 	//static variables accessible by all driver methods
-	public static String input;
-	public static double result;
-	public static double amt;
-	public static User u;
-	public static String userType;
-	public static Account targetAccount;
-	public static final Logger log = LogManager.getLogger();
+	private static String input;
+	private static double result;
+	private static double amt;
+	private static User u;
+	private static String userType;
+	private static Account targetAccount;
+	private static final Logger log = LogManager.getLogger();
+	
 	public static void main(String[] args){
 
 		//initialize variables
@@ -47,22 +48,19 @@ public class Driver {
 					passW = scan.nextLine();
 
 					if(UserManager.userExists(userN))
-					{//User exists
+					{//Retrieve user record from the database
 						u = DatabaseManager.login(userN, passW);
 						userType = u.getUserType();
 
 						if(userType.equals("Customer"))
-						{
+						{//if the user is a customer, get their linked account
 							u.setAccount(DatabaseManager.getAccount(userN));
 							printLoginResult(u.getAccount().getStatus());
-
-						}else if (userType.equals("Employee") || userType.equals("Admin"))
-						{
-							loginDone = true;
-							log.info("User " + u.getUserName() + " logged in");
-							System.out.println("Login successful");
 						}
-
+						//finish login procedure
+						loginDone = true;
+						log.info("User " + u.getUserName() + " logged in");
+						System.out.println("Login successful");
 					}else
 						System.out.println("User " + userN + " does not exist");
 				}
@@ -74,23 +72,35 @@ public class Driver {
 					fullN = scan.nextLine();
 					//temporarily using execution control to control username selection loop
 					while(!done)
-					{
-						System.out.println("Enter a username:");
-						userN = scan.nextLine();
-						if(!UserManager.userExists(userN))
+					{//
+						if(!fullN.isEmpty())
 						{
-							System.out.println("Username " + u.getUserName() + " is available. Enter a password:");
-							passW = scan.nextLine();
-							createAccount(fullN, userN, passW);
-							log.info("New account " + userN + " has been created and is pending activation");
+							System.out.println("Enter a username:");
+							userN = scan.nextLine();
+							if(!UserManager.userExists(userN))
+							{
+								System.out.println("Username " + u.getUserName() + " is available. Enter a password:");
+								passW = scan.nextLine();
+								if(passW.isEmpty())
+								{//exit loop if no password is provided
+									System.out.println("Password cannot be blank. Try again");
+									done = true;
+								}
+								createAccount(fullN, userN, passW);
+								log.info("New account " + userN + " has been created and is pending activation");
+								done = true;
+							}
+							else				
+							{//prevent duplicate usernames
+								log.info("User failed to create account under taken username " + userN);
+								System.out.println("That username is taken, try another (or press enter to cancel)");
+							}
+						}else
+						{
+							System.out.println("Login cancelled");
 							done = true;
 						}
-						else
-							//prevent duplicate usernames
-							log.info("User failed to create account under taken username " + userN);
-						System.out.println("That username is taken, try another");
 					}
-					System.out.println("Account request submitted. Please wait for access.");
 					//reset boolean done so execution will continue
 					done = false;
 					//reset user object
@@ -111,7 +121,7 @@ public class Driver {
 			{
 				//If there is a user logged in, display their basic info and prompt with available actions
 				System.out.println(UserManager.getUserInfo(u));
-				System.out.println(UserManager.getPrompt(u));
+				System.out.println(UserManager.getPrompt(u.getUserType()));
 
 				input = scan.nextLine();
 				switch(input)
@@ -186,13 +196,19 @@ public class Driver {
 							AccountManager.transfer(u.getAccount(), amt, targetAccount);
 						}
 					}
-				case "exit":
+					else
+					{//Option 3 for employee/admin is 
+
+					}
+					break;
+				case "x":
 					userType = "";
-					u = new User();
 					log.info("User " + u.getUserName() + " logged out");
+					System.out.println("Logged out of " + u.getUserName());
+					u = new User();
 					loginDone = false;
 					break;
-					
+
 				default:
 					System.out.println("Invalid input");
 					break;
@@ -205,6 +221,7 @@ public class Driver {
 	}
 
 	private static void printLoginResult(String status) {
+		//Print message based on status of customer account
 		//storing this switch statement in its own method so main method isn't as crowded
 		switch(status)
 		{		
@@ -213,7 +230,8 @@ public class Driver {
 			System.out.println("Login successful");
 			break;
 		case "Pending":
-			log.warn("User " + u.getUserName() + " attempted to log to their account but it has not been activated yet.");
+			log.warn("User " + u.getUserName() + " attempted to log in to their account but it has not "
+					+ "been activated yet.");
 			System.out.println("This account hasn't been activated yet, try again later");
 			break;
 		case "Closed":
@@ -234,10 +252,12 @@ public class Driver {
 		u.setLastName(real.substring(real.indexOf(" ")));
 		u.setUserName(user);
 		u.setPassword(pwd);
+		//A new account's linked employee and open timestamp are null as these will be set upon approval
 		u.setAccount(new Account(user, "Pending", null, 0.00, null));
+		//create records for new user and their bank account
 		DatabaseManager.createUser(u);
 		DatabaseManager.createAccount(u.getAccount());
-		System.out.println("Account requested. Please wait for access");
+		System.out.println("Account request submitted. Please wait for access");
 	}
 
 }

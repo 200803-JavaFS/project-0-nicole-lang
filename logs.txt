@@ -3,3 +3,10 @@
 2020-08-14 15:19:48 INFO  AccountManager:67 - Transaction: $1000.0 transferred into account gattie_time from gattietime. 
 2020-08-14 15:19:48 INFO  AccountManager:69 - User gattietime balance = 0.0
 2020-08-14 15:19:48 INFO  AccountManager:70 - User gattie_time balance = 1000.0
+2020-08-14 15:26:31 INFO  Driver:62 - User nlang logged in
+2020-08-14 15:27:32 INFO  Driver:192 - User  logged out
+2020-08-15 22:05:45 INFO  AccountManager:21 - Transaction: $200.0 withdrawn from account gattietime	 Balance is now $800.0
+2020-08-15 22:05:46 INFO  AccountManager:44 - Transaction: $200.0 deposited into account gattietime. Balance is now $1000.0
+2020-08-15 22:05:47 INFO  AccountManager:63 - Transaction: $1000.0 transferred into account gattie_time from gattietime. 
+2020-08-15 22:05:47 INFO  AccountManager:65 - User gattietime balance = 0.0
+2020-08-15 22:05:47 INFO  AccountManager:66 - User gattie_time balance = 1000.0
