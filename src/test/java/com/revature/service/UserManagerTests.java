@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.revature.dao.DatabaseManager;
 import com.revature.models.Account;
 import com.revature.models.User;
 
@@ -26,17 +27,23 @@ public class UserManagerTests {
 	}
 	@Test
 	public void testGetUserInfo() {
+		String result = UserManager.getUserInfo(u);
 		System.out.println("Testing get user info");
 		//test valid cases
-		assertTrue(UserManager.getUserInfo(u).contains("Balance"));
+		assertTrue(result.contains("Balance"));
 		u.setUserType("Employee");
-		assertTrue(UserManager.getUserInfo(u).contains("Your Active Customers"));
+		result = UserManager.getUserInfo(u);
+		assertTrue(result.contains("Your Active Customers"));
+		
 		u.setUserType("Admin");
-		assertTrue(UserManager.getUserInfo(u).contains("User List"));
+		result = UserManager.getUserInfo(u);
+		assertTrue(result.contains("User List"));
+		
 		//test default case
 		u.setUserType("");
-		assertFalse(UserManager.getUserInfo(u).contains("Balance"));
-		System.out.println("getUserInfo successful");		
+		result = UserManager.getUserInfo(u);
+		assertFalse(result.contains("Balance"));
+		System.out.println("getUserInfo successful");
 	}
 
 	@Test
@@ -64,5 +71,6 @@ public class UserManagerTests {
 	{
 		u.setUserType("Customer");
 	}
+	
 
 }

@@ -1,5 +1,7 @@
 package com.revature.service;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -132,5 +134,14 @@ public interface AccountManager {
 		
 		return(newBals);
 	}
+	public static List<Account> getCustomers(String currentUser)
+	{//retrieve a list of customers linked to the given Employee
+		return DatabaseManager.listEmpCustomers(currentUser);
+	}
+	public static List<Account> getPendingAccounts()
+	{//retrieve a list of customers linked to the given Employee
+		return DatabaseManager.listRequests();
+	}
+	
 
 }

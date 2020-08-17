@@ -20,12 +20,12 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 	private static Account targetAccount;
 	private static final String selectionError = "Invalid Selection";
 	private static final Logger log = LogManager.getLogger();
-	
+
 	//These arrays are used to save memory by declaring several constants for user types and statuses
 	//The employee user type is not specifically used in any checks so it is excluded
 	private static final String[] types = {"Customer", "Admin"};
 	private static final String[] statuses = {"Pending", "Denied", "Open", "Closed"};
-	
+
 	//main method
 	public static void main(String[] args){
 
@@ -49,31 +49,19 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 				{
 				case "0":
 				{
-					//login with existing username and password
 					System.out.println("Enter your username:");
 					userN = scan.nextLine();
 					System.out.println("Enter your password:");
 					passW = scan.nextLine();
-
-					if(UserManager.userExists(userN))
-					{//Retrieve user record from the database
-						u = DatabaseManager.login(userN, passW);
-						userType = u.getUserType();
-
-						if(userType.equals(types[0]))
-						{//if the user is a customer, get their linked account
-							u.setAccount(DatabaseManager.getAccount(userN));
-							printLoginResult(u.getAccount().getStatus());
-						}
-						//finish login procedure
-						loginDone = true;
+					if(doLogin(userN, passW))
+					{
 						logMessage = "User " + u.getUserName() + " logged in";
 						log.info(logMessage);
 						System.out.println("Login successful");
-					}else
-						System.out.println("User " + userN + " does not exist");
+						loginDone = true;
+					}
+					break;
 				}
-				break;
 
 				case "1":{
 					//create new user account
@@ -145,50 +133,50 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 					{
 					case "1":
 						//option 1 for employee/admin is to approve a pending account
-							System.out.println("Enter the username of the account you want to approve:");
-							input = scan.nextLine();
-							targetAccount = DatabaseManager.getAccount(input);
-							//check if target user account is pending activation
-							if(targetAccount.getStatus().equals(statuses[0]))//Pending
-							{
-								DatabaseManager.approveAccount(input, u.getUserName());
-								logMessage = "User account " + targetAccount.getUserName() + 
-										" was approved by super-user " + u.getUserName();
-								log.info(logMessage);
-							}
-							else if (targetAccount.getUserName().equals(""))
-							{
-								System.out.println("No bank account with that username");
-								logMessage = "Super-user " + u.getUserName() + "attempted to "
-										+ "approve a nonexistent bank account under Username " + input;
-								log.error(logMessage);
-							}
-						
+						System.out.println("Enter the username of the account you want to approve:");
+						input = scan.nextLine();
+						targetAccount = DatabaseManager.getAccount(input);
+						//check if target user account is pending activation
+						if(targetAccount.getStatus().equals(statuses[0]))//Pending
+						{
+							DatabaseManager.approveAccount(input, u.getUserName());
+							logMessage = "User account " + targetAccount.getUserName() + 
+									" was approved by super-user " + u.getUserName();
+							log.info(logMessage);
+						}
+						else if (targetAccount.getUserName().equals(""))
+						{
+							System.out.println("No bank account with that username");
+							logMessage = "Super-user " + u.getUserName() + "attempted to "
+									+ "approve a nonexistent bank account under Username " + input;
+							log.error(logMessage);
+						}
+
 						break;
 					case "2":
-						{//option 2 for employee/admin is deny a pending account
-							System.out.println("Enter the username of the account you want to deny:");
-							input = scan.nextLine();
-							targetAccount = DatabaseManager.getAccount(input);
-							//check if target user account is pending activation
-							if(targetAccount.getStatus().equals(statuses[0]))//Pending
-							{
-								DatabaseManager.denyAccountRequest(input, u.getUserName(), statuses[1]);
-								logMessage = "Account request for username " + targetAccount.getUserName() 
-										+ " was denied by super-user " + u.getUserName();
-								log.info(logMessage);
-							}
-							else if (targetAccount.getUserName().equals(""))
-							{
-								System.out.println("No account request with that username");
-								logMessage = "Super-user " + u.getUserName() + "attempted to deny a "
-										+ "nonexistent account request under Username " + input;
-								log.error(logMessage);
-							}else
-
-								System.out.println("Only accounts with status 'Pending' can be denied.");
+					{//option 2 for employee/admin is deny a pending account
+						System.out.println("Enter the username of the account you want to deny:");
+						input = scan.nextLine();
+						targetAccount = DatabaseManager.getAccount(input);
+						//check if target user account is pending activation
+						if(targetAccount.getStatus().equals(statuses[0]))//Pending
+						{
+							DatabaseManager.denyAccountRequest(input, u.getUserName(), statuses[1]);
+							logMessage = "Account request for username " + targetAccount.getUserName() 
+							+ " was denied by super-user " + u.getUserName();
+							log.info(logMessage);
 						}
-						break;
+						else if (targetAccount.getUserName().equals(""))
+						{
+							System.out.println("No account request with that username");
+							logMessage = "Super-user " + u.getUserName() + "attempted to deny a "
+									+ "nonexistent account request under Username " + input;
+							log.error(logMessage);
+						}else
+
+							System.out.println("Only accounts with status 'Pending' can be denied.");
+					}
+					break;
 					case "3":						
 						if (userType.equals(types[1]))//Admin
 						{//Option 3 for admin is close an account
@@ -212,31 +200,40 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 						}else
 							System.out.println("Invalid selection");
 						break;
-					case "4":
-						if(userType.equals(types[1]))//Admin
+					case "accs":
+						//display a given user's account info if the current user is not a customer
+						if(!userType.equals(types[0]))
 						{
-							System.out.println("Enter the username of the account you want to manage");
+							System.out.println("Enter the username of the account you want to access:");
 							input = scan.nextLine();
-							if(UserManager.userExists(input) && DatabaseManager.getAccount(input)
-									.getOpenTime().equals(null))
-							{//get the requested customer account and perform banking actions
-								targetAccount = DatabaseManager.getAccount(input);
-								System.out.println(UserManager.getPrompt(types[0]));//Customer
-								while(!input.isEmpty())
-								{
-									input = scan.nextLine();
-									doBanking(targetAccount, input, scan);
+							if(UserManager.userExists(input))
+							{//print the requested user info
+								System.out.println(DatabaseManager.getUser(input).toString());
+
+								if(userType.equals(types[1]))//Admin
+								{//allow banking actions
+									if(UserManager.userExists(input) && DatabaseManager.getAccount(input)
+											.getOpenTime().equals(null))
+									{//get the requested customer account and perform banking actions
+										targetAccount = DatabaseManager.getAccount(input);
+										System.out.println(UserManager.getPrompt(types[0]));//Customer
+										while(!input.isEmpty())
+										{
+											input = scan.nextLine();
+											doBanking(targetAccount, input, scan);
+										}
+									}	
 								}
 							}
-						}else
-							System.out.println(selectionError);
+						}
+
 						break;
 					case "x":
 						userType = "";
 						logMessage = "User " + u.getUserName() + " logged out";
 						log.info(logMessage);
 						System.out.println("Logged out of " + u.getUserName());
-						
+
 						//reset user object and loop control variable
 						u = new User();
 						loginDone = false;
@@ -248,12 +245,50 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 					}
 				}else
 					System.out.println("Error: invalid user type");
-				
+
 			}
 
 		}while (!done);
 		System.out.println("Thank you for using Delta Savings, have a nice day!");
 		scan.close();
+	}
+
+	public static boolean doLogin(String userN, String passW) {
+		//login with existing username and password
+		boolean success = false;
+
+		if(UserManager.userExists(userN))
+		{//Retrieve user record from the database
+			u = DatabaseManager.login(userN, passW);
+			userType = u.getUserType();
+			//check if password matched saved password
+			if(userType.equals(""))
+			{
+				System.out.println("Incorrect password");
+				logMessage = "Failed login attempt to user " + userN;
+				log.info(logMessage);
+			}
+			else 
+			{//if the user is a customer, get their linked account
+				if(userType.equals(types[0]))
+				{//print customer login result
+					u.setAccount(DatabaseManager.getAccount(userN));
+					printLoginResult(u.getAccount().getStatus());
+					
+					if(u.getAccount().getStatus().equals("Open"))
+					{//only log in if the account is open
+						success = true;
+					}			
+				}else if(!userType.equals(""))
+					success = true;							
+			}
+			
+		}else
+		{
+			System.out.println("User " + userN + " does not exist");
+		}
+
+		return success;
 	}
 
 	private static void printLoginResult(String status) {

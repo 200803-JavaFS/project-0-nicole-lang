@@ -36,8 +36,11 @@ public class User implements Serializable{
 	@Override
 	public String toString()
 	{//usertype		Username = username		Name = firstname lastname
-		return (userType + "\tUsername = "+ userName + "\tName = "+ firstName + " " + lastName 
-				+ "\t" + bankAccount.toString());
+		String output = userType + " Username = "+ userName + "\nName = "+ firstName + " " + lastName
+				+"\n Password: " + password;
+		if(userType.equals("Customer"))
+			output += bankAccount.toString();
+		return output;
 	}
 	//declare getters and setters
 

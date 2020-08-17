@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.revature.models.Account;
 import com.revature.models.User;
@@ -172,12 +174,11 @@ public interface DatabaseManager {
 		}
 		return type;
 	}
-	public static String listEmpCustomers(String empUserName)
+	public static List<Account> listEmpCustomers(String empUserName)
 	{//retrieve a list of accounts with the current user as their linked employee
-		StringBuilder builder = new StringBuilder();
+		List<Account> customers = new ArrayList<>();
 		Account a = new Account();
-		String empCustomers = "";
-		String sql = "Select * from accounts where linked_employee = ?;";
+		String sql = "Select * from accounts where linked_employee = ?";
 		try(Connection conn = ConnectionUtility.getConnection()){
 
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -192,26 +193,19 @@ public interface DatabaseManager {
 				a.setStatus(result.getString("account_status"));
 				a.setLinkedEmployee(result.getString("linked_employee"));
 				a.setOpenTime(result.getTimestamp("open_timestamp"));
-				//Account.toString() doesn't include the username because it's usually accessed alongside User.toString()
-				builder.append(a.getUserName() + "\t" + a.toString() + "\n");
+				customers.add(a);
+				a = new Account();
 			}
 
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
-		finally {
-			empCustomers = builder.toString();
-		}
-		if(empCustomers.isEmpty())
-			return "none\n";
-		else
-			return empCustomers;
+		return customers;
 	}
-	public static String listRequests()
-	{//retrieve a list of pending account requests; formatted using overridden toString()
-		StringBuilder builder = new StringBuilder();
+	public static List<Account> listRequests()
+	{//retrieve a list of pending account requests
+		List<Account> requests = new ArrayList<Account>();
 		Account a = new Account();
-		String requests = "";
 		String sql = "Select * from accounts where account_status = 'Pending';";
 		try(Connection conn = ConnectionUtility.getConnection()){			
 
@@ -225,26 +219,19 @@ public interface DatabaseManager {
 				a.setStatus(result.getString("account_status"));
 				a.setLinkedEmployee(result.getString("linked_employee"));
 				a.setOpenTime(result.getTimestamp("open_timestamp"));
-				//Account.toString() doesn't include the username because it's usually accessed alongside User.toString()
-				builder.append(a.getUserName() + "\t" + a.toString() + "\n");
+				requests.add(a);
+				a = new Account();
 			}
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
-		finally {
-			requests = builder.toString();
-		}
-		if(requests.isEmpty())
-			return "none\n";
-		else
 			return requests;
 
 	}
-	public static String listUsers()
+	public static List<User> listUsers()
 	{
-		//retrieve list of all users in the database plus their account info if it exists
-		StringBuilder builder = new StringBuilder();
-		String allUsers = "";
+		//retrieve list of all users in the database
+		List<User> allUsers = new ArrayList<>();
 		User u = new User();
 		String sql = "Select * from users order by user_name;";
 		try(Connection conn = ConnectionUtility.getConnection()){
@@ -252,26 +239,19 @@ public interface DatabaseManager {
 			Statement statement = conn.createStatement();
 			ResultSet result = statement.executeQuery(sql);
 
-			//get all matching rows
+			//get all users
 			while(result.next())
 			{
 				u.setUserName(result.getString("user_name"));
 				u.setFirstName(result.getString("user_first_name"));
 				u.setLastName(result.getString("user_last_name"));
 				u.setUserType(result.getString("user_type"));
-				builder.append(u.toString());
-				//also print account info if applicable
-				if(u.getUserType().equals("Customer")) {
-					builder.append(u.getAccount().toString());
-				}else
-					builder.append("\n");
+				allUsers.add(u);
+				u = new User();
 			}
 
 		}catch(SQLException e) {
 			e.printStackTrace();
-		}
-		finally {
-			allUsers = builder.toString();
 		}
 		return allUsers;
 	}
