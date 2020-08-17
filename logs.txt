@@ -1,0 +1,18 @@
+2020-08-17 12:28:18 INFO  AccountManager:32 - Transaction: $200.0 removed from account gattietime by nlang. Balance is now $800.0
+2020-08-17 12:28:19 INFO  AccountManager:26 - Transaction: User gattietime withdrew 200.0 from their account. Balance is now $800.0
+2020-08-17 12:28:20 INFO  AccountManager:73 - Transaction: $200.0 deposited into account gattietime by nlang. Balance is now $1200.0
+2020-08-17 12:28:21 INFO  AccountManager:112 - Transaction: nlang transferred $1000.0 into account gattie_time from gattietime
+2020-08-17 12:28:21 INFO  AccountManager:116 - User gattietime balance = 0.0
+User gattie_time balance = 1000.0
+2020-08-17 12:29:53 INFO  AccountManager:32 - Transaction: $200.0 removed from account gattietime by nlang. Balance is now $800.0
+2020-08-17 12:29:54 INFO  AccountManager:26 - Transaction: User gattietime withdrew 200.0 from their account. Balance is now $800.0
+2020-08-17 12:29:55 INFO  AccountManager:73 - Transaction: $200.0 deposited into account gattietime by nlang. Balance is now $1200.0
+2020-08-17 12:29:56 INFO  AccountManager:112 - Transaction: nlang transferred $1000.0 into account gattie_time from gattietime
+2020-08-17 12:29:56 INFO  AccountManager:116 - User gattietime balance = 0.0
+User gattie_time balance = 1000.0
+2020-08-17 12:32:21 INFO  AccountManager:32 - Transaction: $200.0 removed from account gattietime by nlang. Balance is now $800.0
+2020-08-17 12:32:22 INFO  AccountManager:26 - Transaction: User gattietime withdrew 200.0 from their account. Balance is now $800.0
+2020-08-17 12:32:22 INFO  AccountManager:73 - Transaction: $200.0 deposited into account gattietime by nlang. Balance is now $1200.0
+2020-08-17 12:32:24 INFO  AccountManager:112 - Transaction: nlang transferred $1000.0 into account gattie_time from gattietime
+2020-08-17 12:32:24 INFO  AccountManager:116 - User gattietime balance = 0.0
+User gattie_time balance = 1000.0

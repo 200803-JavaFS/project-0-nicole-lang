@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 
 import com.revature.models.Account;
@@ -212,10 +213,10 @@ public interface DatabaseManager {
 		Account a = new Account();
 		String requests = "";
 		String sql = "Select * from accounts where account_status = 'Pending';";
-		try(Connection conn = ConnectionUtility.getConnection()){
+		try(Connection conn = ConnectionUtility.getConnection()){			
 
-			PreparedStatement statement = conn.prepareStatement(sql);
-			ResultSet result = statement.executeQuery();
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
 
 			//get all matching rows
 			while(result.next())
@@ -248,8 +249,8 @@ public interface DatabaseManager {
 		String sql = "Select * from users order by user_name;";
 		try(Connection conn = ConnectionUtility.getConnection()){
 
-			PreparedStatement statement = conn.prepareStatement(sql);
-			ResultSet result = statement.executeQuery();
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
 
 			//get all matching rows
 			while(result.next())
@@ -330,9 +331,8 @@ public interface DatabaseManager {
 		String sql = "Select get_current_time();";
 		try(Connection conn = ConnectionUtility.getConnection()){
 
-			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.executeQuery();
-			ResultSet result = statement.getResultSet();
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
 			return result.getTimestamp(1);
 			
 		}catch(SQLException e) {

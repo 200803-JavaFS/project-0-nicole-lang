@@ -21,8 +21,8 @@ public interface AccountManager {
 
 			if(currentUser.equals(a.getUserName()))
 			{
-				logMessage = "Transaction: User" + a.getUserName() + "withdrew " + amt 
-						+ "from their account. Balance is now $" + a.getBalance();
+				logMessage = "Transaction: User " + a.getUserName() + " withdrew " + amt 
+						+ " from their account. Balance is now $" + a.getBalance();
 				log.info(logMessage);	
 			}
 			else
@@ -41,6 +41,7 @@ public interface AccountManager {
 		}	
 		else
 			System.out.println("Insufficient funds");
+		
 		return a.getBalance();
 	}
 	

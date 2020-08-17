@@ -304,7 +304,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 	public static void doBanking(Account a, String selection, Scanner scan)
 	{
 		String currentUser = u.getUserName();
-		Account targetAccount = new Account();
+		targetAccount = new Account();
 		switch(selection)
 		{
 		case "1":

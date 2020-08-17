@@ -2,7 +2,9 @@ package com.revature.service;
 
 import static org.junit.Assert.*;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.revature.models.Account;
@@ -11,8 +13,8 @@ import com.revature.models.User;
 public class UserManagerTests {
 
 	static User u;
-	@Before
-	public void setUpUser()
+	@BeforeClass
+	public static void setUpUser()
 	{//initialize user fields
 		u = new User();
 		u.setUserName("gattietime");
@@ -25,15 +27,29 @@ public class UserManagerTests {
 	@Test
 	public void testGetUserInfo() {
 		System.out.println("Testing get user info");
-		assertTrue(UserManager.getUserInfo(u).contains("Timothy Gattie"));
+		//test valid cases
+		assertTrue(UserManager.getUserInfo(u).contains("Balance"));
+		u.setUserType("Employee");
+		assertTrue(UserManager.getUserInfo(u).contains("Your Active Customers"));
+		u.setUserType("Admin");
+		assertTrue(UserManager.getUserInfo(u).contains("User List"));
+		//test default case
+		u.setUserType("");
+		assertFalse(UserManager.getUserInfo(u).contains("Balance"));
 		System.out.println("getUserInfo successful");		
 	}
 
 	@Test
 	public void testGetPrompt() {
-		System.out.println("Testing get user info");
+		System.out.println("Testing get prompt");
 		assertTrue(UserManager.getPrompt(u.getUserType()).contains("deposit"));
-		System.out.println("getUserInfo successful");
+		u.setUserType("Employee");
+		assertTrue(UserManager.getPrompt(u.getUserType()).contains("approve"));
+		u.setUserType("Admin");
+		assertTrue(UserManager.getPrompt(u.getUserType()).contains("close"));
+		u.setUserType("");
+		assertFalse(UserManager.getPrompt(u.getUserType()).contains("Select operation"));
+		System.out.println("getPrompt successful");
 	}
 
 	@Test
@@ -41,6 +57,12 @@ public class UserManagerTests {
 		System.out.println("Testing userExists");
 		assertTrue(UserManager.userExists(u.getUserName()));
 		System.out.println("userExists successful");	
+	}
+	
+	@After
+	public void resetUserType()
+	{
+		u.setUserType("Customer");
 	}
 
 }
