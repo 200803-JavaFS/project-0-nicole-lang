@@ -113,7 +113,7 @@ public interface AccountManager {
 				log.info(logMessage);
 			}
 			logMessage = "User " + userName1 + " balance = " + currentAccount.getBalance() 
-			+"\nUser " + userName2 + " balance = " + targetAccount.getBalance();
+			+"\tUser " + userName2 + " balance = " + targetAccount.getBalance();
 			log.info(logMessage);
 			
 			//prepare return array (used in testing)

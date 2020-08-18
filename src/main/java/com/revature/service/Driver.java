@@ -16,7 +16,6 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 	private static User u;
 	private static String userType;
 	private static Account targetAccount;
-	private static boolean accountVisible;
 	private static boolean loginDone = false;
 	private static Scanner scan;
 	private static final String SELECTION_ERROR = "Invalid Selection";
@@ -34,7 +33,6 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		String fullN;
 		String passW;
 		boolean loginInfoDisplayed = false;
-		u = new User();
 		userType = "";
 		boolean done = false;
 		scan = new Scanner(System.in);
@@ -43,6 +41,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		do {
 			if(!loginDone)
 			{
+				u = new User();
 				System.out.println("Enter '0' to log in or '1' to create an account. Enter 'x' to quit.");
 				input = scan.nextLine();
 				switch(input)
@@ -55,7 +54,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 					{//check if user exists before asking for password
 						System.out.println("Enter your password:");
 						passW = scan.nextLine();
-						
+
 						if(doLogin(userN, passW))
 						{
 							logMessage = "User " + userN + " logged in";
@@ -138,7 +137,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 				input = scan.nextLine();
 				if(userType.equals(types[0]))
 					doBanking(u.getAccount(), input);
-				
+
 				else if (!userType.isEmpty()){
 					switch(input)
 					{
@@ -242,63 +241,66 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 
 	private static void doAccountManagement() {
 		//account management handling for admins and employees
+		userType = u.getUserType();
 		User targetUser = new User();
-		
+		if(getEmpCustomers(u.getUserName()).isEmpty())
+			System.out.println("You don't have any viewable customer accounts.");
+
 		//display a given user's account info if the current user is not a customer
-		if(!userType.equals(types[0]))
+		else if(!userType.equals(types[0]))
 		{
 			System.out.println("Enter the username of the account you want to access:");
 			input = scan.nextLine();
 			if(UserManager.userExists(input))
 			{
-				//check if target user account is visible to employee
-				if(userType.equals(types[1]) 
-						|| getEmpCustomers(u.getUserName()).toString().contains(input)) {
-					if(DatabaseManager.getAccount(input).getUserName().equals(input))
-					{//allow display of and access to account
-						accountVisible = true;
-					}
-					else
-					{//if target user doesn't have an account, just display their personal info
-						targetUser = DatabaseManager.getUser(input);
-						System.out.println(targetUser.toString());
-						System.out.println("Selected user does not have a bank account\n");
-					}
-				}
-
-				if(accountVisible)
-				{//retrieve and display user info
-					System.out.println("Accessing " + input + "'s account");
-					targetUser = DatabaseManager.getUser(input);
+				targetUser = DatabaseManager.getUser(input);
+			}
+			if(checkPrivileges(u, targetUser))
+			{//get account info if it exists, then print available info
+				if(targetUser.getUserType().equals(types[0]))
+				{//if selected user is a customer, determine whether to allow banking access
 					targetUser.setAccount(DatabaseManager.getAccount(input));
-					System.out.println(targetUser.toString());
-					if(userType.equals(types[1])) //Admin
-					{//allow banking actions
-						//get the requested customer account and perform banking actions
-						if(targetUser.getAccount().getStatus().equals(statuses[2]))
-						{//only display banking prompt if account is open
-							System.out.println(UserManager.getPrompt(types[0]));//Customer
+					if(userType.equals(types[1]))//Admin
+					{//print the info and allow banking access
+						System.out.println(targetUser.toString());
+						while(!input.equals("x")){
+							System.out.println(UserManager.getPrompt(types[0]));
 							input = scan.nextLine();
-							while(!input.equals("x"))
-							{
-								doBanking(targetUser.getAccount(), input);
-								System.out.println(UserManager.getPrompt(types[0]));
-								input = scan.nextLine();
-							}
-							
-						}else
-							System.out.println("Account is not open; banking not available");
-
-						System.out.println("Exited " + targetUser.getUserName() + "'s account\n");
-					}
-				}else if(DatabaseManager.getUser(input).getAccount().getUserName().equals("input"))
-					//if the account does exist but is not accessible
-					System.out.println("You do not have access to this account.\n");
-
+							doBanking(targetUser.getAccount(), input);
+							scan.nextLine();
+						}				
+					}else
+						System.out.println(targetUser.toString());
+				}else
+					System.out.println(targetUser.toString());
+				
 			}else
-				System.out.println("That user does not exist\n");
+				System.out.println("You don't have access to this account.\n");
 		}else
-			System.out.println("You do not have access to this command.\n");		
+			System.out.println("You don't have access to this command.\n");
+	}
+
+	private static boolean checkPrivileges(User currentUser, User target) {
+		boolean result = false;;
+		switch(userType)
+		{
+			case "Employee":
+				//check employee customer list
+				for(Account a: getEmpCustomers(currentUser.getUserName()))
+				{
+					if(a.getUserName().equals(target.getUserName()))
+						return true;
+				}
+					System.out.println("You don't have access to this account\n");
+				break;
+			case "Admin":
+				result = true;
+				break;
+			default:
+				result = false;	
+				break;
+		}
+		return result;
 	}
 
 	private static void doLogout() {
@@ -322,30 +324,30 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		boolean success = false;
 
 		//Retrieve user record from the database
-			u = new User();
-			u = DatabaseManager.login(userN, passW);
-			userType = u.getUserType();
-			//check if password matched saved password
-			if(userType.equals(""))
-			{
-				System.out.println("Incorrect password");
-				logMessage = "Failed login attempt to user " + userN;
-				log.info(logMessage);
-			}
-			else 
-			{//if the user is a customer, get their linked account
-				if(userType.equals(types[0]))
-				{//print customer login result
-					u.setAccount(DatabaseManager.getAccount(userN));
-					printLoginResult(u.getAccount().getStatus());
+		u = new User();
+		u = DatabaseManager.login(userN, passW);
+		userType = u.getUserType();
+		//check if password matched saved password
+		if(userType.equals(""))
+		{
+			System.out.println("Incorrect password");
+			logMessage = "Failed login attempt to user " + userN;
+			log.info(logMessage);
+		}
+		else 
+		{//if the user is a customer, get their linked account
+			if(userType.equals(types[0]))
+			{//print customer login result
+				u.setAccount(DatabaseManager.getAccount(userN));
+				printLoginResult(u.getAccount().getStatus());
 
-					if(u.getAccount().getStatus().equals("Open"))
-					{//only log in if the account is open
-						success = true;
-					}			
-				}else if(!userType.equals(""))
-					success = true;							
-			}
+				if(u.getAccount().getStatus().equals("Open"))
+				{//only log in if the account is open
+					success = true;
+				}			
+			}else if(!userType.equals(""))
+				success = true;							
+		}
 
 		return success;
 	}
@@ -382,7 +384,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		//prepare data for submission
 		u.setUserType(types[0]);
 		u.setFirstName(real.substring(0, real.indexOf(" ")));
-		u.setLastName(real.substring(real.indexOf(" ")));
+		u.setLastName(real.substring(real.indexOf(" ") + 1));
 		u.setUserName(user);
 		u.setPassword(pwd);
 		//A new account's linked employee and open timestamp are null as these will be set upon approval

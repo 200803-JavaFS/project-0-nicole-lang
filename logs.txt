@@ -1,11 +1,38 @@
-2020-08-18 13:48:34 INFO  Driver:62 - User nlang logged in
-2020-08-18 13:49:25 INFO  Driver:307 - User nlang logged out
-2020-08-18 13:49:38 ERROR Driver:373 - Login method failed to prevent invalid user
-2020-08-18 13:49:38 INFO  Driver:62 - User tkl7 logged in
-2020-08-18 13:49:52 INFO  AccountManager:68 - Transaction: User tkl7 deposited $100.0 into their account. Balance is now $200.0
-2020-08-18 13:49:55 INFO  Driver:307 - User tkl7 logged out
-2020-08-18 13:53:10 INFO  Driver:62 - User nlang logged in
-2020-08-18 13:53:24 INFO  Driver:307 - User nlang logged out
-2020-08-18 13:53:38 ERROR Driver:374 - Login method failed to prevent invalid user
-2020-08-18 13:53:38 INFO  Driver:62 - User tkl7 logged in
-2020-08-18 13:53:56 INFO  Driver:307 - User tkl7 logged out
+2020-08-18 14:20:24 INFO  Driver:333 - Failed login attempt to user nlang
+2020-08-18 14:20:34 INFO  Driver:62 - User nlang logged in
+2020-08-18 14:20:54 INFO  AccountManager:113 - Transaction: nlang transferred $100.0 into account isright from tkl7
+2020-08-18 14:20:54 INFO  AccountManager:117 - User tkl7 balance = 0.0	User isright balance = 200.0
+2020-08-18 14:21:12 INFO  Driver:307 - User nlang logged out
+2020-08-18 14:21:22 INFO  Driver:62 - User tkl7 logged in
+2020-08-18 14:21:33 INFO  Driver:307 - User tkl7 logged out
+2020-08-18 14:22:33 INFO  Driver:62 - User isright logged in
+2020-08-18 14:22:56 INFO  AccountManager:107 - Transaction: isright transferred $100.0 into account tkl7
+2020-08-18 14:22:56 INFO  AccountManager:117 - User isright balance = 100.0	User tkl7 balance = 100.0
+2020-08-18 14:23:08 INFO  Driver:307 - User isright logged out
+2020-08-18 14:24:04 INFO  Driver:62 - User tkl7 logged in
+2020-08-18 14:24:30 INFO  Driver:307 - User tkl7 logged out
+2020-08-18 14:25:20 INFO  Driver:62 - User hkendrick logged in
+2020-08-18 14:25:45 INFO  Driver:307 - User hkendrick logged out
+2020-08-18 14:27:12 INFO  Driver:62 - User hkendrick logged in
+2020-08-18 14:27:36 INFO  Driver:307 - User hkendrick logged out
+2020-08-18 14:30:59 INFO  Driver:62 - User hkendrick logged in
+2020-08-18 14:31:20 INFO  Driver:306 - User hkendrick logged out
+2020-08-18 14:35:51 INFO  Driver:62 - User hkendrick logged in
+2020-08-18 14:36:17 INFO  Driver:306 - User hkendrick logged out
+2020-08-18 15:17:06 INFO  Driver:62 - User hkendrick logged in
+2020-08-18 15:17:19 INFO  Driver:310 - User hkendrick logged out
+2020-08-18 15:40:28 INFO  Driver:62 - User hkendrick logged in
+2020-08-18 15:40:52 INFO  Driver:312 - User hkendrick logged out
+2020-08-18 15:43:22 INFO  Driver:95 - New account mrynlsn has been created and is pending activation
+2020-08-18 15:43:32 INFO  Driver:62 - User hkendrick logged in
+2020-08-18 15:43:48 INFO  Driver:158 - User account mrynlsn was approved by super-user hkendrick
+2020-08-18 15:45:02 INFO  Driver:312 - User hkendrick logged out
+2020-08-18 15:45:16 INFO  Driver:62 - User hkendrick logged in
+2020-08-18 15:45:28 INFO  Driver:312 - User hkendrick logged out
+2020-08-18 15:59:08 INFO  Driver:62 - User hkendrick logged in
+2020-08-18 15:59:48 INFO  Driver:312 - User hkendrick logged out
+2020-08-18 17:11:26 INFO  Driver:61 - User hkendrick logged in
+2020-08-18 17:11:44 INFO  Driver:307 - User hkendrick logged out
+2020-08-18 17:15:06 INFO  Driver:61 - User hkendrick logged in
+2020-08-18 17:16:14 INFO  Driver:309 - User hkendrick logged out
+2020-08-18 17:21:33 INFO  Driver:94 - New account test has been created and is pending activation
