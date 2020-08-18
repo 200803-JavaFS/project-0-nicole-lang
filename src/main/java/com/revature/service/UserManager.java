@@ -48,7 +48,7 @@ public interface UserManager {
 			
 			empCustomers = DatabaseManager.listEmpCustomers(u.getUserName());
 			builder.append("--Your Active Customers--\n");
-			if(!requests.isEmpty())
+			if(!empCustomers.isEmpty())
 			{
 				for(Account a : empCustomers)
 				{

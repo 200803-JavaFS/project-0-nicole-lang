@@ -38,8 +38,7 @@ public interface AccountManager {
 		}
 		else if(amt < 0) 
 		{
-			System.out.println("You cannot withdraw a negative amount of money; "
-					+ "please use deposit to add funds");		
+			System.out.println("You cannot withdraw a negative/zero amount of money\n");
 		}	
 		else
 			System.out.println("Insufficient funds");
@@ -75,10 +74,10 @@ public interface AccountManager {
 				log.info(logMessage);
 			}
 			
-			System.out.println("Deposit successful. New balance: " + a.getBalance());
+			System.out.println("Deposit successful. New balance: " + a.getBalance() + "\n");
 		}
 		else
-			System.out.println("You cannot deposit a negative amount of money; please use withdraw to remove funds");
+			System.out.println("You cannot deposit a negative/zero amount of money\n");
 		return a.getBalance();
 	}
 	
@@ -122,15 +121,14 @@ public interface AccountManager {
 			newBals[1] = targetAccount.getBalance();
 			
 			if(currentUser.equals(currentAccount.getUserName()))
-				System.out.println("Transfer successful. New balance is " + currentAccount.getBalance());
+				System.out.println("Transfer successful. New balance is " + currentAccount.getBalance() + "\n");
 			else
-				System.out.println("Transfer successful. See log file for details");
+				System.out.println("Transfer successful. See log file for details\n");
 		}
 		else if(amt < 0) 
-			System.out.println("You cannot transfer a negative amount of money; "
-					+ "please use deposit to add funds");
+			System.out.println("You cannot transfer a negative/zero amount of money\n");
 		else
-			System.out.println("Insufficient funds");
+			System.out.println("Insufficient funds\n");
 		
 		return(newBals);
 	}

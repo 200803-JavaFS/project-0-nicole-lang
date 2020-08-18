@@ -1,15 +1,11 @@
-2020-08-17 17:36:59 WARN  Driver:314 - User ffun1 attempted to log in to their closed account
-2020-08-17 17:37:00 INFO  Driver:269 - Failed login attempt to user nlang
-2020-08-17 21:56:36 INFO  Driver:59 - User nlang logged in
-2020-08-17 21:58:29 INFO  Driver:234 - User nlang logged out
-2020-08-17 23:35:44 INFO  Driver:89 - New account isright has been created and is pending activation
-2020-08-17 23:50:21 INFO  Driver:89 - New account isright has been created and is pending activation
-2020-08-17 23:50:35 INFO  Driver:59 - User nlang logged in
-2020-08-17 23:50:52 INFO  Driver:145 - User account isright was approved by super-user nlang
-2020-08-17 23:50:59 INFO  Driver:244 - User nlang logged out
-2020-08-17 23:54:13 INFO  Driver:315 - User isright logged in
-2020-08-17 23:54:13 INFO  Driver:59 - User isright logged in
-2020-08-17 23:54:27 INFO  AccountManager:69 - Transaction: Userisrightdeposited $200.0into their account. Balance is now $200.0
-2020-08-18 00:03:31 INFO  Driver:315 - User isright logged in
-2020-08-18 00:03:43 INFO  AccountManager:28 - Transaction: User isright withdrew 200.0 from their account. Balance is now $0.0
-2020-08-18 00:13:41 INFO  Driver:283 - Failed login attempt to user nlang
+2020-08-18 13:48:34 INFO  Driver:62 - User nlang logged in
+2020-08-18 13:49:25 INFO  Driver:307 - User nlang logged out
+2020-08-18 13:49:38 ERROR Driver:373 - Login method failed to prevent invalid user
+2020-08-18 13:49:38 INFO  Driver:62 - User tkl7 logged in
+2020-08-18 13:49:52 INFO  AccountManager:68 - Transaction: User tkl7 deposited $100.0 into their account. Balance is now $200.0
+2020-08-18 13:49:55 INFO  Driver:307 - User tkl7 logged out
+2020-08-18 13:53:10 INFO  Driver:62 - User nlang logged in
+2020-08-18 13:53:24 INFO  Driver:307 - User nlang logged out
+2020-08-18 13:53:38 ERROR Driver:374 - Login method failed to prevent invalid user
+2020-08-18 13:53:38 INFO  Driver:62 - User tkl7 logged in
+2020-08-18 13:53:56 INFO  Driver:307 - User tkl7 logged out
