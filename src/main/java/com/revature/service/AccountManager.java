@@ -10,7 +10,7 @@ import com.revature.models.Account;
 
 public interface AccountManager {
 
-	Logger log = LogManager.getLogger();
+	public static final Logger log = LogManager.getLogger();
 	//Bank account service interface
 	public static Double withdraw(Account a, double amt, String currentUser)
 	{

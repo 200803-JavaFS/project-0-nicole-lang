@@ -35,4 +35,3 @@
 2020-08-18 17:11:44 INFO  Driver:307 - User hkendrick logged out
 2020-08-18 17:15:06 INFO  Driver:61 - User hkendrick logged in
 2020-08-18 17:16:14 INFO  Driver:309 - User hkendrick logged out
-2020-08-18 17:21:33 INFO  Driver:94 - New account test has been created and is pending activation

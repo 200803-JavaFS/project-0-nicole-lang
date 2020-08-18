@@ -30,7 +30,7 @@ public class Account implements Serializable{
 	@Override
 	public String toString()
 	{
-		return "\nStatus = " + status + "\nBalance = " + balance + "\nOpen Time: " + openTime;
+		return "\nStatus = " + status + "\nBalance = $" + balance + "\nOpen Time: " + openTime;
 	}
 	//declare getters/setters
 	

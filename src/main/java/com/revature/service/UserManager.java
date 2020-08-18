@@ -23,7 +23,7 @@ public interface UserManager {
 		{//print the appropriate account information / available lists for the type of user
 		case "Customer":
 			//print account balance
-			builder.append("Balance: " + u.getAccount().getBalance() + "");
+			builder.append("Balance: $" + u.getAccount().getBalance() + "");
 			break;
 			
 			//for employees and admins, lists of available customer records are printed once upon login
