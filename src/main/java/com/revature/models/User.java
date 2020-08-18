@@ -37,7 +37,7 @@ public class User implements Serializable{
 	public String toString()
 	{//usertype		Username = username		Name = firstname lastname
 		String output = userType + " Username = "+ userName + "\nName = "+ firstName + " " + lastName
-				+"\n Password: " + password;
+				+"\nPassword: " + password;
 		if(userType.equals("Customer"))
 			output += bankAccount.toString();
 		return output;

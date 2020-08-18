@@ -64,8 +64,8 @@ public interface AccountManager {
 
 			if(currentUser.equals(userN))
 			{
-				logMessage = "Transaction: User" + userN + "deposited $" + amt 
-						+ "into their account. Balance is now $" + a.getBalance();
+				logMessage = "Transaction: User " + userN + " deposited $" + amt 
+						+ " into their account. Balance is now $" + a.getBalance();
 				log.info(logMessage);	
 			}
 			else
@@ -139,7 +139,7 @@ public interface AccountManager {
 		return DatabaseManager.listEmpCustomers(currentUser);
 	}
 	public static List<Account> getPendingAccounts()
-	{//retrieve a list of customers linked to the given Employee
+	{
 		return DatabaseManager.listRequests();
 	}
 	

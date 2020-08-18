@@ -11,6 +11,11 @@ public interface UserManager {
 		
 	//User info service interface
 	public static String getUserInfo(User u) {
+
+		List<Account> requests = DatabaseManager.listRequests();
+		List<User> users = DatabaseManager.listUsers();
+		List<Account> empCustomers = new ArrayList<>();
+		
 		StringBuilder builder = new StringBuilder();		
 		builder.append("Welcome, " + u.getFirstName() + " " + u.getLastName() + "\n");
 		
@@ -24,7 +29,7 @@ public interface UserManager {
 			//for employees and admins, lists of available customer records are printed once upon login
 		case "Admin":			
 			builder.append("--User List--\n");
-			for(User a : DatabaseManager.listUsers())
+			for(User a : users)
 			{
 				builder.append(a.getUserName()+ "\n");
 			}
@@ -32,16 +37,26 @@ public interface UserManager {
 		//execution is meant to fall through here because an admin shares access to the employee list types
 		case "Employee":			
 			builder.append("--Pending Account Requests--\n");
+			if(!requests.isEmpty())
+			{//get list of pending accounts
+				for(Account a : requests)
+				{
+					builder.append(a.getUserName() + "\n");
+				}
+			}else
+				builder.append("none\n");
 			
-			for(Account a : DatabaseManager.listRequests())
-			{
-				builder.append(a.getUserName() + "\n");
-			}
+			empCustomers = DatabaseManager.listEmpCustomers(u.getUserName());
 			builder.append("--Your Active Customers--\n");
-			for(Account a : DatabaseManager.listEmpCustomers(u.getUserName()))
+			if(!requests.isEmpty())
 			{
-				builder.append(a.getUserName() + "\n");
-			}
+				for(Account a : empCustomers)
+				{
+					builder.append(a.getUserName() + "\n");
+				}
+			}else
+				builder.append("none");
+			
 			break;
 		default:
 			//The default cases in these methods shouldn't be reached 

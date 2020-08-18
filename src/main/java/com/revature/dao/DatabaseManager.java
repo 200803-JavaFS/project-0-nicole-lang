@@ -164,10 +164,9 @@ public interface DatabaseManager {
 
 			//get result
 			ResultSet result = statement.executeQuery();
-			if (result.next())
-			{//store user type
-				type = result.getString("user_type");
-			}
+			result.next();
+			//store user type
+			type = result.getString("user_type");
 
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -274,15 +273,15 @@ public interface DatabaseManager {
 		
 	}
 
-	public static void denyAccountRequest(String userName, String linkedEmployee, String status) {
+	public static void denyAccountRequest(String userName, String linkedEmployee) {
 		//set a given customer's account status to Closed
-				String sql = "Update accounts set account_status = 'Denied', linked_employee = ? "
-						+ "where user_name = ?;";
+				String sql = "Update accounts set account_status = 'Denied', linked_employee = ?, "
+						+ "open_time = ? where user_name = ?;";
 				try(Connection conn = ConnectionUtility.getConnection()){
 
 					PreparedStatement statement = conn.prepareStatement(sql);
-					statement.setString(1, status);
-					statement.setString(2, linkedEmployee);
+					statement.setString(1, linkedEmployee);
+					statement.setTimestamp(2, saveDateTime());
 					statement.setString(3, userName);
 					statement.executeUpdate();
 					
@@ -313,6 +312,7 @@ public interface DatabaseManager {
 
 			Statement statement = conn.createStatement();
 			ResultSet result = statement.executeQuery(sql);
+			result.next();
 			return result.getTimestamp(1);
 			
 		}catch(SQLException e) {

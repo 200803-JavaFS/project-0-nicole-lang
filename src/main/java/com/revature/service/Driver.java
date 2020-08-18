@@ -13,17 +13,17 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 	//static variables accessible by all driver methods
 	private static String logMessage;
 	private static String input;
-	private static double result;
-	private static double amt;
 	private static User u;
 	private static String userType;
 	private static Account targetAccount;
-	private static final String selectionError = "Invalid Selection";
+	private static User targetUser; 
+	private static boolean accountVisible;
+	private static final String SELECTION_ERROR = "Invalid Selection";
 	private static final Logger log = LogManager.getLogger();
 
 	//These arrays are used to save memory by declaring several constants for user types and statuses
 	//The employee user type is not specifically used in any checks so it is excluded
-	private static final String[] types = {"Customer", "Admin"};
+	private static final String[] types = {"Customer", "Admin", "Employee"};
 	private static final String[] statuses = {"Pending", "Denied", "Open", "Closed"};
 
 	//main method
@@ -43,7 +43,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		do {
 			if(!loginDone)
 			{
-				System.out.println("Enter '0' to log in or '1' to create an account. Enter 'exit' to quit.");
+				System.out.println("Enter '0' to log in or '1' to create an account. Enter 'x' to quit.");
 				input = scan.nextLine();
 				switch(input)
 				{
@@ -55,8 +55,6 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 					passW = scan.nextLine();
 					if(doLogin(userN, passW))
 					{
-						logMessage = "User " + u.getUserName() + " logged in";
-						log.info(logMessage);
 						System.out.println("Login successful");
 						loginDone = true;
 					}
@@ -76,7 +74,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 							userN = scan.nextLine();
 							if(!UserManager.userExists(userN))
 							{
-								System.out.println("Username " + u.getUserName() + " is available. "
+								System.out.println("Username " + userN + " is available. "
 										+ "Enter a password:");
 								passW = scan.nextLine();
 								if(passW.isEmpty())
@@ -109,13 +107,13 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 					u = new User();
 					break;
 				}
-				case "exit":
+				case "x":
 				{
 					done = true;
 					break;
 				}
 				default:
-					System.out.println(selectionError);
+					System.out.println(SELECTION_ERROR);
 					break;
 				}
 			}
@@ -127,7 +125,9 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 
 				input = scan.nextLine();
 				if(userType.equals(types[0]))
+				{
 					doBanking(u.getAccount(), input, scan);
+				}
 				else if (!userType.isEmpty()){
 					switch(input)
 					{
@@ -160,14 +160,14 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 						targetAccount = DatabaseManager.getAccount(input);
 						//check if target user account is pending activation
 						if(targetAccount.getStatus().equals(statuses[0]))//Pending
-						{
-							DatabaseManager.denyAccountRequest(input, u.getUserName(), statuses[1]);
+						{//success
+							DatabaseManager.denyAccountRequest(input, u.getUserName());
 							logMessage = "Account request for username " + targetAccount.getUserName() 
 							+ " was denied by super-user " + u.getUserName();
 							log.info(logMessage);
 						}
 						else if (targetAccount.getUserName().equals(""))
-						{
+						{//failure
 							System.out.println("No account request with that username");
 							logMessage = "Super-user " + u.getUserName() + "attempted to deny a "
 									+ "nonexistent account request under Username " + input;
@@ -207,25 +207,36 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 							System.out.println("Enter the username of the account you want to access:");
 							input = scan.nextLine();
 							if(UserManager.userExists(input))
-							{//print the requested user info
-								System.out.println(DatabaseManager.getUser(input).toString());
+							{
+								//check if target user account is visible to employee
+								if(userType.equals(types[1]) 
+										| getEmpCustomers(u.getUserName()).toString().contains(input))
+									accountVisible = true;
 
-								if(userType.equals(types[1]))//Admin
-								{//allow banking actions
-									if(UserManager.userExists(input) && DatabaseManager.getAccount(input)
-											.getOpenTime().equals(null))
-									{//get the requested customer account and perform banking actions
-										targetAccount = DatabaseManager.getAccount(input);
+								if(accountVisible)
+								{//retrieve and display user info
+									targetUser = DatabaseManager.getUser(input);
+									System.out.println(targetUser.toString());
+									if(userType.equals(types[1]))//Admin
+									{//allow banking actions
+										//get the requested customer account and perform banking actions
+										System.out.println("Accessing " + input + "'s account");
 										System.out.println(UserManager.getPrompt(types[0]));//Customer
-										while(!input.isEmpty())
+										while(!input.isEmpty() && !input.equals("x"))
 										{
 											input = scan.nextLine();
-											doBanking(targetAccount, input, scan);
+											doBanking(targetUser.getAccount(), input, scan);
+											System.out.println(UserManager.getPrompt(types[0]));
 										}
-									}	
-								}
-							}
-						}
+										System.out.println("Exited " + input + "'s account");
+									}
+								}else
+									System.out.println("You do not have access to this account.");
+
+							}else
+								System.out.println("That user does not exist");
+						}else
+							System.out.println("You do not have access to this command.");
 
 						break;
 					case "x":
@@ -240,7 +251,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 						break;
 
 					default:
-						System.out.println(selectionError);
+						System.out.println(SELECTION_ERROR);
 						break;
 					}
 				}else
@@ -251,6 +262,11 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		}while (!done);
 		System.out.println("Thank you for using Delta Savings, have a nice day!");
 		scan.close();
+	}
+
+	private static List<Account> getEmpCustomers(String currentUser) {
+		return DatabaseManager.listEmpCustomers(currentUser);
+
 	}
 
 	public static boolean doLogin(String userN, String passW) {
@@ -274,7 +290,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 				{//print customer login result
 					u.setAccount(DatabaseManager.getAccount(userN));
 					printLoginResult(u.getAccount().getStatus());
-					
+
 					if(u.getAccount().getStatus().equals("Open"))
 					{//only log in if the account is open
 						success = true;
@@ -282,7 +298,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 				}else if(!userType.equals(""))
 					success = true;							
 			}
-			
+
 		}else
 		{
 			System.out.println("User " + userN + " does not exist");
@@ -298,7 +314,6 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		{		
 		case "Open":
 			log.info("User " + u.getUserName() + " logged in");
-			System.out.println("Login successful");
 			break;
 		case "Pending":
 			log.warn("User " + u.getUserName() + " attempted to log in to their account but it has not "
@@ -325,6 +340,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 
 	public static void createAccount(String real, String user, String pwd) {
 		//prepare data for submission
+		u.setUserType(types[0]);
 		u.setFirstName(real.substring(0, real.indexOf(" ")));
 		u.setLastName(real.substring(real.indexOf(" ")));
 		u.setUserName(user);
@@ -338,6 +354,9 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 	}
 	public static void doBanking(Account a, String selection, Scanner scan)
 	{
+
+		double result;
+		double amt;
 		String currentUser = u.getUserName();
 		targetAccount = new Account();
 		switch(selection)
@@ -376,7 +395,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 			}
 			break;
 		default:
-			System.out.println(selectionError);
+			System.out.println(SELECTION_ERROR);
 			break;
 		}
 
