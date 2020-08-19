@@ -13,8 +13,12 @@ import com.revature.models.User;
 import com.revature.utils.ConnectionUtility;
 public interface DatabaseManager {
 	
-	//DAO interface to provide methods which run queries on the DeltaSavings database and return the results
-	//There should be a separate User manager and Account manager interface, for each table
+	/* The DatabaseManager interface handles the execution of SQL statements on the DeltaSavings
+	 * database. Statements are used for static SQL statements, and PreparedStatements are used when
+	 * user input is involved in the statement, to prevent SQL injection.
+	 * 
+	 * The saveDateTime method accesses the get_current_time() stored procedure.
+	 */
 	
 	public static void updateBalance(String currentUser, double newBalance)
 	{//called from deposit, withdraw, and transfer methods to update the account record's balance

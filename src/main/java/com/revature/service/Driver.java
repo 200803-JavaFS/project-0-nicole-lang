@@ -10,6 +10,10 @@ import com.revature.models.Account;
 import com.revature.models.User;
 
 public class Driver implements UserManager, AccountManager, DatabaseManager{
+	/* The Driver class handles user input and implements the DAO and service layer interfaces.
+	 * The currently logged-in user and their user type are stored at class level.
+	 * JUnit testing is implemented for the doLogin method. (DriverLoginTest.java)
+	 */
 	//static variables accessible by all driver methods
 	private static String logMessage;
 	private static String input;

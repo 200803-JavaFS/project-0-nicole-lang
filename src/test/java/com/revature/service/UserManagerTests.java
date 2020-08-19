@@ -12,7 +12,10 @@ import com.revature.models.Account;
 import com.revature.models.User;
 
 public class UserManagerTests {
-
+	/* JUnit test class for UserManager.java
+	/* These weren't required, but I used them for testing
+	 * */
+	
 	static User u;
 	@BeforeClass
 	public static void setUpUser()

@@ -16,7 +16,8 @@ import com.revature.models.Account;
 import com.revature.utils.ConnectionUtility;
 
 public class AccountManagerTests {
-
+	//JUnit test class for AccountManager.java
+	
 	static Account a;
 	static Account adminA;
 	static Account transferA;

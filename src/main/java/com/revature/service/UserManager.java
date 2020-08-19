@@ -8,8 +8,8 @@ import com.revature.models.Account;
 import com.revature.models.User;
 
 public interface UserManager {
-		
-	//User info service interface
+	// The UserManager interface handles retrieving and storing information related to the Users table.
+	
 	public static String getUserInfo(User u) {
 
 		List<Account> requests = DatabaseManager.listRequests();

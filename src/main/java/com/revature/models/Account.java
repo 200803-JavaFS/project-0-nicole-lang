@@ -3,7 +3,11 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class Account implements Serializable{
-
+	/* The Account class represents a single record in the Accounts table.
+	 * Each User object has its own Account instance, which is empty unless the User is a customer.
+	 * This class is a Java Bean; it is serializable, has both a default and no-args constructor, 
+		and has only private fields (with getters and setters).
+	 */
 	private static final long serialVersionUID = 1L;
 	//The Account class represents a single customer account record.
 	

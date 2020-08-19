@@ -6,7 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DriverLoginTest {
-
+	//JUnit test class for Driver.java
 
 	@Test
 	public void testValidLogin() {

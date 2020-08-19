@@ -9,9 +9,12 @@ import com.revature.dao.DatabaseManager;
 import com.revature.models.Account;
 
 public interface AccountManager {
-
+	/* The AccountManager interface handles retrieving and storing information related to the Accounts table.
+	 * It contains the deposit, withdraw, and transfer methods, as well as shorthand access to customer lists.
+	 * JUnit testing is implemented for all of these methods except for list retrieval.
+	 */
 	public static final Logger log = LogManager.getLogger();
-	//Bank account service interface
+
 	public static Double withdraw(Account a, double amt, String currentUser)
 	{
 		String logMessage;
@@ -137,7 +140,7 @@ public interface AccountManager {
 		return DatabaseManager.listEmpCustomers(currentUser);
 	}
 	public static List<Account> getPendingAccounts()
-	{
+	{//retrieve a list of pending account requests
 		return DatabaseManager.listRequests();
 	}
 	

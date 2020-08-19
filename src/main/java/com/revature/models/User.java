@@ -5,7 +5,11 @@ import java.io.Serializable;
 public class User implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	//The User class represents a single record in the Users table.
+	/* The User class represents a single record in the Users table.
+	 * Each User has a userType field that determines the access privileges provided when logged in.
+	 * This class is a Java Bean; it is serializable, has both a default and no-args constructor, 
+		and has only private fields (with getters and setters).
+	 */
 	
 	private String userName;	
 	private String firstName;
