@@ -68,8 +68,9 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 								System.out.println("Login successful\n");
 								loginInfoDisplayed = false;
 								loginDone = true;
-							}else if(!DatabaseManager.getAccount(userN).getStatus().equals(statuses[2]))
-								//terminate application if account being logged into is not open
+							}else if(DatabaseManager.getUser(userN).getUserType().equals(types[0])
+									&& !DatabaseManager.getAccount(userN).getStatus().equals(statuses[2]))
+								//terminate application if customer account being logged into is not open
 								//a user whose account is inactive shouldn't be able to continue their session
 								done = true;
 							if(!loginDone)
@@ -239,7 +240,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 						doAccountManagement();
 						break;
 					case "x":
-						doLogout();
+						doLogout(false);
 						loginInfoDisplayed = false;
 						break;
 
@@ -285,7 +286,6 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 							System.out.println(UserManager.getPrompt(types[0]));
 							input = scan.nextLine();
 							doBanking(targetUser.getAccount(), input);
-							scan.nextLine();
 						}				
 					}else
 						System.out.println(targetUser.toString());
@@ -318,15 +318,19 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		return result;
 	}
 
-	private static void doLogout() {
-		userType = "";
-		logMessage = "User " + u.getUserName() + " logged out";
-		log.info(logMessage);
-		System.out.println("Logged out of " + u.getUserName() + "\n");
+	private static void doLogout(boolean adminBanking) {
+		if(!adminBanking) 
+		{//log out if account being accessed is the same as the one logged in
+			userType = "";
+			logMessage = "User " + u.getUserName() + " logged out";
+			log.info(logMessage);
+			System.out.println("Logged out of " + u.getUserName() + "\n");
 
-		//reset user object and loop control variable
-		u = new User();
-		loginDone = false;	
+			//reset user object and loop control variable
+			u = new User();
+			loginDone = false;	
+		}
+		
 	}
 
 	private static List<Account> getEmpCustomers(String currentUser) {
@@ -458,7 +462,10 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 			}
 			break;
 		case "x":
-			doLogout();
+			if(a.getUserName().equals(u.getUserName()))
+				doLogout(false);
+			else
+				doLogout(true);
 			break;
 		default:
 			System.out.println(SELECTION_ERROR);

@@ -23,6 +23,7 @@ public class Account implements Serializable{
 		linkedEmployee = "";
 		balance = 0;
 	}
+	
 	public Account(String userName, String status, String linkedEmployee, double balance, Timestamp openTime)
 	{//Overloaded constructor for loading existing account record
 		this.userName = userName;
@@ -31,6 +32,7 @@ public class Account implements Serializable{
 		this.balance = balance;
 		this.openTime = openTime;
 	}
+	
 	@Override
 	public String toString()
 	{
@@ -41,41 +43,32 @@ public class Account implements Serializable{
 	public String getUserName() {
 		return userName;
 	}
-
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
 	public String getStatus() {
 		return status;
 	}
-
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
 	public String getLinkedEmployee() {
 		return linkedEmployee;
 	}
-
 	public void setLinkedEmployee(String linkedEmployee) {
 		this.linkedEmployee = linkedEmployee;
 	}
-
 	public double getBalance() {
 		return balance;
 	}
-
 	public void setBalance(double balance) {
 		this.balance = balance;
 	}
-	public Timestamp getOpenTime()
-	{
+	public Timestamp getOpenTime(){
 		return openTime;
-	}
-	
+	}	
 	public void setOpenTime(Timestamp timestamp) {
-		this.openTime = timestamp;
-		
+		this.openTime = timestamp;		
 	}
 
 }

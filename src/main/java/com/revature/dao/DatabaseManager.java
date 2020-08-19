@@ -24,7 +24,7 @@ public interface DatabaseManager {
 	{//called from deposit, withdraw, and transfer methods to update the account record's balance
 		try(Connection conn = ConnectionUtility.getConnection()){
 
-			String sql = "Update Accounts Set account_balance = ? Where user_name = ? ";
+			String sql = "Update Accounts Set account_balance = ? Where user_name = ?;";
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			statement.setDouble(1, newBalance);
@@ -41,7 +41,7 @@ public interface DatabaseManager {
 	{//add a new user to the Users table
 		try(Connection conn = ConnectionUtility.getConnection()){
 
-			String sql = "Insert Into Users Values (?, ?, ?, ?, ?)";
+			String sql = "Insert Into Users Values (?, ?, ?, ?, ?);";
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			int i = 0;
@@ -62,7 +62,7 @@ public interface DatabaseManager {
 	{//add a new account to the Accounts table
 		try(Connection conn = ConnectionUtility.getConnection()){
 
-			String sql = "Insert Into Accounts Values (?, ?, ?, ?, ?)";
+			String sql = "Insert Into Accounts Values (?, ?, ?, ?);";
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			int i = 0;
@@ -70,7 +70,6 @@ public interface DatabaseManager {
 			statement.setString(++i, newAccount.getStatus());
 			statement.setString(++i, newAccount.getLinkedEmployee());
 			statement.setDouble(++i, newAccount.getBalance());
-			statement.setTimestamp(++i, saveDateTime());
 			statement.executeUpdate();
 
 		}catch(SQLException e) { 
@@ -82,7 +81,7 @@ public interface DatabaseManager {
 	{//retrieve the personal information of a logged-in user
 		User u = new User();
 		try(Connection conn = ConnectionUtility.getConnection()){
-			String sql = "Select * From Users Where user_name = ? And user_password = ?";
+			String sql = "Select * From Users Where user_name = ? And user_password = ?;";
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			statement.setString(1, userName);
@@ -105,12 +104,13 @@ public interface DatabaseManager {
 
 		return u;
 	}
+	
 	public static Account getAccount(String userName) {
 		//retrieve the account information of a given customer
 		Account a = new Account();
 		try(Connection conn = ConnectionUtility.getConnection()){
 
-			String sql = "Select * from Accounts where user_name = ?";
+			String sql = "Select * from Accounts where user_name = ?;";
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			statement.setString(1, userName);
@@ -129,6 +129,7 @@ public interface DatabaseManager {
 		}
 		return a;
 	}
+	
 	public static User getUser(String userName)
 	{//retrieve the personal information of a given user
 		//similar to login but doesn't check password; used by employees and admins to view other users' inf
@@ -157,6 +158,7 @@ public interface DatabaseManager {
 
 		return u;
 	}
+	
 	public static String getUserType(String userName)
 	{//retrieve only the user type of a given user
 		String type = "";
@@ -177,11 +179,12 @@ public interface DatabaseManager {
 		}
 		return type;
 	}
+	
 	public static List<Account> listEmpCustomers(String empUserName)
 	{//retrieve a list of accounts with the current user as their linked employee
 		List<Account> customers = new ArrayList<>();
 		Account a = new Account();
-		String sql = "Select * from accounts where linked_employee = ?";
+		String sql = "Select * from accounts where linked_employee = ?;";
 		try(Connection conn = ConnectionUtility.getConnection()){
 
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -205,6 +208,7 @@ public interface DatabaseManager {
 		}
 		return customers;
 	}
+	
 	public static List<Account> listRequests()
 	{//retrieve a list of pending account requests
 		List<Account> requests = new ArrayList<Account>();
@@ -231,6 +235,7 @@ public interface DatabaseManager {
 			return requests;
 
 	}
+	
 	public static List<User> listUsers()
 	{
 		//retrieve list of all users in the database
@@ -258,6 +263,7 @@ public interface DatabaseManager {
 		}
 		return allUsers;
 	}
+	
 	public static void approveAccount(String userName, String empName) {
 		//set a given customer's account status to Open and their linked employee to whoever approved it
 		String sql = "Update accounts set account_status = 'Open', linked_employee = ?, "
@@ -279,25 +285,24 @@ public interface DatabaseManager {
 
 	public static void denyAccountRequest(String userName, String linkedEmployee) {
 		//set a given customer's account status to Closed
-				String sql = "Update accounts set account_status = 'Denied', linked_employee = ?, "
-						+ "open_time = ? where user_name = ?;";
+				String sql = "Update accounts set account_status = 'Denied', linked_employee = ? "
+						+ "where user_name = ?;";
 				try(Connection conn = ConnectionUtility.getConnection()){
 
 					PreparedStatement statement = conn.prepareStatement(sql);
 					statement.setString(1, linkedEmployee);
-					statement.setTimestamp(2, saveDateTime());
-					statement.setString(3, userName);
+					statement.setString(2, userName);
 					statement.executeUpdate();
 					
 				}catch(SQLException e) {
 					e.printStackTrace();
-				}
-		
+				}		
 	}
+	
 	public static void closeAccount(String userName)
 	{
 		//set a given customer's account status to Closed
-		String sql = "Update accounts set account_status = 'Closed' where user_name = ?";
+		String sql = "Update accounts set account_status = 'Closed' where user_name = ?;";
 		try(Connection conn = ConnectionUtility.getConnection()){
 
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -307,8 +312,8 @@ public interface DatabaseManager {
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
-
 	}
+	
 	public static Timestamp saveDateTime()
 	{//access stored function to get a timestamp 
 		String sql = "Select get_current_time();";

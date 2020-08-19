@@ -4,3 +4,26 @@
 2020-08-18 19:46:04 WARN  Driver:381 - User klippo attempted to log in to their closed account
 2020-08-18 19:46:12 INFO  Driver:345 - User klippo exceeded their login attempts and was kicked out
 2020-08-18 19:59:49 WARN  Driver:385 - User klippo attempted to log in to their closed account
+2020-08-19 00:15:24 INFO  Driver:67 - User nlang logged in
+2020-08-19 00:15:34 INFO  Driver:324 - User nlang logged out
+2020-08-19 00:18:01 INFO  Driver:112 - New account nlang2 has been created and is pending activation
+2020-08-19 00:18:19 INFO  Driver:353 - Failed login attempt to user hkendrick
+2020-08-19 00:24:39 INFO  Driver:113 - New account nlang1 has been created and is pending activation
+2020-08-19 00:24:49 INFO  Driver:67 - User nlang logged in
+2020-08-19 00:25:01 ERROR Driver:183 - Super-user nlangattempted to approve a nonexistent bank account under Username a
+2020-08-19 00:25:05 INFO  Driver:325 - User nlang logged out
+2020-08-19 00:25:17 INFO  Driver:67 - User hkendrick logged in
+2020-08-19 00:25:29 INFO  Driver:176 - User account nlang1 was approved by super-user hkendrick
+2020-08-19 00:26:13 INFO  Driver:325 - User hkendrick logged out
+2020-08-19 00:26:23 INFO  Driver:67 - User nlang1 logged in
+2020-08-19 00:26:40 INFO  AccountManager:71 - Transaction: User nlang1 deposited $200.0 into their account. Balance is now $200.0
+2020-08-19 00:26:49 INFO  AccountManager:31 - Transaction: User nlang1 withdrew 100.0 from their account. Balance is now $100.0
+2020-08-19 00:27:21 INFO  AccountManager:110 - Transaction: nlang1 transferred $100.0 into account mrynlsn
+2020-08-19 00:27:21 INFO  AccountManager:120 - User nlang1 balance = 0.0	User mrynlsn balance = 100.0
+2020-08-19 00:27:26 INFO  Driver:325 - User nlang1 logged out
+2020-08-19 00:27:53 INFO  Driver:67 - User mrynlsn logged in
+2020-08-19 00:28:06 INFO  Driver:325 - User mrynlsn logged out
+2020-08-19 00:28:21 INFO  Driver:67 - User nlang logged in
+2020-08-19 00:29:28 INFO  Driver:325 - User nlang logged out
+2020-08-19 00:30:14 INFO  Driver:67 - User nlang1 logged in
+2020-08-19 00:30:25 INFO  Driver:325 - User nlang1 logged out
