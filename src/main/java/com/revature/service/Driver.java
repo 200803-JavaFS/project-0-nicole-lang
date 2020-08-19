@@ -33,6 +33,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		String fullN;
 		String passW;
 		boolean loginInfoDisplayed = false;
+		int loginAttempts = 0;
 		userType = "";
 		boolean done = false;
 		scan = new Scanner(System.in);
@@ -53,15 +54,28 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 					if(UserManager.userExists(userN))
 					{//check if user exists before asking for password
 						System.out.println("Enter your password:");
-						passW = scan.nextLine();
-
-						if(doLogin(userN, passW))
-						{
-							logMessage = "User " + userN + " logged in";
-							log.info(logMessage);
-							System.out.println("Login successful\n");
-							loginInfoDisplayed = false;
-							loginDone = true;
+						do
+						{//allow 3 login attempts before force quit
+							passW = scan.nextLine();
+							if(doLogin(userN, passW, loginAttempts))
+							{
+								logMessage = "User " + userN + " logged in";
+								log.info(logMessage);
+								System.out.println("Login successful\n");
+								loginInfoDisplayed = false;
+								loginDone = true;
+							}else if(!DatabaseManager.getAccount(userN).getStatus().equals(statuses[2]))
+								//terminate application if account being logged into is not open
+								//a user whose account is inactive shouldn't be able to continue their session
+								done = true;
+							if(!loginDone)
+								loginAttempts++;
+							
+						}while(loginAttempts < 3 && !loginDone && !done);
+						if(loginAttempts == 3)
+						{//kick user out if they input incorrect password 3 times
+							System.out.println("Sorry, you have exceeded your login attempts for this session.");
+							done = true;
 						}
 					}else
 						System.out.println("User not found");
@@ -281,7 +295,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 	}
 
 	private static boolean checkPrivileges(User currentUser, User target) {
-		boolean result = false;;
+		boolean result = false;
 		switch(userType)
 		{
 			case "Employee":
@@ -295,9 +309,6 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 				break;
 			case "Admin":
 				result = true;
-				break;
-			default:
-				result = false;	
 				break;
 		}
 		return result;
@@ -319,7 +330,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 
 	}
 
-	public static boolean doLogin(String userN, String passW) {
+	public static boolean doLogin(String userN, String passW, int attempts) {
 		//login with existing username and password
 		boolean success = false;
 
@@ -330,8 +341,11 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 		//check if password matched saved password
 		if(userType.equals(""))
 		{
-			System.out.println("Incorrect password");
-			logMessage = "Failed login attempt to user " + userN;
+			System.out.println("Incorrect password. Try again (Attempts remaining: " + (3 - attempts) + ")");
+			if((3 - attempts) > 0)
+				logMessage = "Failed login attempt to user " + userN;
+			else
+				logMessage = "User " + userN + " exceeded their login attempts and was kicked out";
 			log.info(logMessage);
 		}
 		else 
@@ -369,7 +383,7 @@ public class Driver implements UserManager, AccountManager, DatabaseManager{
 			break;
 		case "Closed":
 			log.warn("User " + u.getUserName() + " attempted to log in to their closed account");
-			System.out.println("This account has been closed. If you believe this is an error, please"
+			System.out.println("This account has been closed. If you believe this is an error, please "
 					+ "contact an admin for assistance.\n");
 			break;
 		default:
